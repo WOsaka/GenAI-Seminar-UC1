@@ -28,7 +28,7 @@ def query_gpt40(
         return response.choices[0].message.content.strip()
     return ""
 
-def main(image_path = '2-room-floor.jpg'):
+def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Ziel\Beispiel_01.png'):
     base64_image = encode_image(image_path)
     
     messages = [
