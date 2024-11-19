@@ -53,5 +53,17 @@ rooms = [
     {"name": "Küche", "x": 0, "y": 0, "width": 3.0, "height": 2.0, "text_pos": (1.5, 1.0)},
     {"name": "Esszimmer", "x": 0, "y": -3.0, "width": 4.0, "height": 3.0, "text_pos": (2.0, -1.5)},
 ]
-
-create_floor_plan(rooms, "floor_plan_2_with_manual_text_fixed.dxf")
+rooms2 =  [
+        {"name": "Wintergarten", "x": 0, "y": 0, "width": 4.75, "height": 4.75, "text_pos": (2.375, 2.375)},
+        {"name": "Wohnen", "x": 4.75, "y": 0, "width": 7.6, "height": 4.75, "text_pos": (8.55, 2.375)},
+        {"name": "Essen", "x": 12.35, "y": 0, "width": 7.15, "height": 4.75, "text_pos": (15.925, 2.375)},
+        {"name": "Küche", "x": 19.5, "y": 0, "width": 7.34, "height": 4.75, "text_pos": (23.17, 2.375)},
+        {"name": "WC", "x": 4.75, "y": 4.75, "width": 1.5, "height": 1.5, "text_pos": (5.5, 5.5)},
+        {"name": "Abst.", "x": 6.25, "y": 4.75, "width": 1.5, "height": 1.5, "text_pos": (7, 5.5)},
+        {"name": "Flur", "x": 7.75, "y": 4.75, "width": 2.5, "height": 1.5, "text_pos": (8.75, 5.5)},
+        {"name": "Gäste", "x": 10.25, "y": 4.75, "width": 2.5, "height": 1.5, "text_pos": (11.25, 5.5)},
+        {"name": "Arbeiten", "x": 12.75, "y": 4.75, "width": 7.34, "height": 4.75, "text_pos": (16.42, 7.125)},
+        {"name": "Müll", "x": 0, "y": 6.25, "width": 4.75, "height": 1.5, "text_pos": (2.375, 7)},
+        {"name": "Treppenhaus", "x": 4.75, "y": 6.25, "width": 7.6, "height": 1.5, "text_pos": (8.55, 7)}
+    ]
+create_floor_plan(rooms2, "other_floor_plan.dxf")

@@ -2,6 +2,7 @@ import base64
 import os
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+import ezdxf_creator
 load_dotenv()
  
 client: AzureOpenAI = AzureOpenAI(
@@ -28,7 +29,7 @@ def query_gpt40(
         return response.choices[0].message.content.strip()
     return ""
 
-def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Ziel\Beispiel_01.png'):
+def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Grundriss_01_EG.jpg'):
     base64_image = encode_image(image_path)
     
     messages = [
@@ -43,9 +44,14 @@ def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Ziel\Beispiel_01.pn
 
     Output the analysis as a dict  with the following structure:
     {
-        "roomName1": [(x1, y1), (x2, y2), (x3, y3), (x4, y4)],
-        "roomName2": [(x1, y1), (x2, y2), (x3, y3), (x4, y4)],
-        // ... other rooms ...
+            rooms = [
+        {"name": "Wohnzimmer", "x": 0, "y": 4.0, "width": 4.0, "height": 6.5, "text_pos": (2.0, 7.25)},
+        {"name": "Windfang", "x": 0, "y": 2.8, "width": 4.0, "height": 1.2, "text_pos": (2.0, 3.4)},
+        {"name": "Flur", "x": 0, "y": 2.0, "width": 4.0, "height": 0.8, "text_pos": (2.0, 2.4)},
+        {"name": "Bad", "x": 3.0, "y": 0, "width": 1.0, "height": 2.0, "text_pos": (3.5, 1.0)},
+        {"name": "Küche", "x": 0, "y": 0, "width": 3.0, "height": 2.0, "text_pos": (1.5, 1.0)},
+        {"name": "Esszimmer", "x": 0, "y": -3.0, "width": 4.0, "height": 3.0, "text_pos": (2.0, -1.5)},
+]
     }
     Do not send ```json ... just send the text following the ouput structure
     Ensure that every room is showed. Cant happend that a room hide the rest.
@@ -65,6 +71,8 @@ def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Ziel\Beispiel_01.pn
 
     final_response = query_gpt40(messages)
     print(f"GPT-40 response: {final_response}")
+    
+    #ezdxf_creator.create_floor_plan(final_response[1], "floor_plan_2_with_manual_text_fixed.dxf")
     return final_response
 
 if __name__ == "__main__":
