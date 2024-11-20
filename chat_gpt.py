@@ -2,7 +2,10 @@ import base64
 import os
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+import json
+import re
 import ezdxf_creator
+import image_drawer
 load_dotenv()
  
 client: AzureOpenAI = AzureOpenAI(
@@ -29,7 +32,24 @@ def query_gpt40(
         return response.choices[0].message.content.strip()
     return ""
 
-def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Grundriss_01_EG.jpg'):
+def extract_rooms(data_string):
+    try:
+        # Replace tuple-like (x, y) with JSON-compatible [x, y]
+        data_string = re.sub(r'\(([^)]+)\)', r'[\1]', data_string)
+
+        # Parse the modified string as JSON
+        data = json.loads(data_string)
+
+        # Check if "rooms" key exists and return its value
+        if "rooms" in data:
+            return data["rooms"]
+        else:
+            raise ValueError("The provided string does not contain a 'rooms' key.")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"JSON parsing error: {e}")
+
+
+def main(image_path = 'Grundriss Beispiele\Beispiel_David.png'):
     base64_image = encode_image(image_path)
     
     messages = [
@@ -72,8 +92,11 @@ def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Grundriss_01_EG.jpg
     final_response = query_gpt40(messages)
     print(f"GPT-40 response: {final_response}")
     
-    #ezdxf_creator.create_floor_plan(final_response[1], "floor_plan_2_with_manual_text_fixed.dxf")
+    ezdxf_creator.create_floor_plan(extract_rooms(final_response), "floor_plan_2_with_manual_text_fixed.dxf")
+    image_drawer.plot_rooms(extract_rooms(final_response))
     return final_response
+
+
 
 if __name__ == "__main__":
     main()
