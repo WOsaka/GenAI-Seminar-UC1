@@ -23,17 +23,14 @@ def plot_rooms(rooms):
         )
 
         if room["x"] < min_X:
-            min_X = room["x"]
-            print("min_X = ", min_X)
+            min_X = room["x"]         
         if room["x"] + room["width"] > max_X: 
-            max_X = room["x"] + room["width"]
-            print("max_X = ", max_X)
+            max_X = room["x"] + room["width"]     
         if room["y"] < min_Y:
-            min_Y = room["y"]
-            print("min_Y = ", min_Y)
+            min_Y = room["y"]    
         if room["y"] + room["height"] > max_Y: 
             max_Y = room["y"] + room["height"]
-            print("max_Y = ", max_Y)
+          
 
         # Add the rectangle to the plot
         ax.add_patch(rect)
@@ -80,4 +77,4 @@ rooms = [
 ]
 
 # Plot the rooms
-plot_rooms(rooms)
+#plot_rooms(rooms)
