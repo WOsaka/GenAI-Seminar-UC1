@@ -49,7 +49,7 @@ def extract_rooms(data_string):
         raise ValueError(f"JSON parsing error: {e}")
 
 
-def main(image_path = 'Grundriss Beispiele\Beispiel_David.png'):
+def main(image_path = 'GenAI-Seminar-UC1\Grundriss Beispiele\Ziel\Beispiel_01.png'):
     base64_image = encode_image(image_path)
     
     messages = [
@@ -92,7 +92,7 @@ def main(image_path = 'Grundriss Beispiele\Beispiel_David.png'):
     final_response = query_gpt40(messages)
     print(f"GPT-40 response: {final_response}")
     
-    ezdxf_creator.create_floor_plan(extract_rooms(final_response), "floor_plan_2_with_manual_text_fixed.dxf")
+    ezdxf_creator.create_floor_plan(extract_rooms(final_response), "other_floor_plan.dxf")
     image_drawer.plot_rooms(extract_rooms(final_response))
     return final_response
 
