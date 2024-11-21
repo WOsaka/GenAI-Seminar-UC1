@@ -49,12 +49,9 @@ def plot_rooms(rooms):
     ax.set_aspect('equal')
     # Set the limits of the plot based on the layout
     # Set the limits of the plot based on the layout
-    if min_X == 0:
-        min_X = -2
-    if min_Y == 0:
-        min_Y = -2    
-    ax.set_xlim(min_X * 1.5, max_X * 1.5)
-    ax.set_ylim(min_Y * 1.5, max_Y * 1.5)
+     
+    ax.set_xlim(min_X - 3, max_X + 3)
+    ax.set_ylim(min_Y - 3, max_Y + 3)
     # Add grid lines for better visualization
     ax.grid(True, which='both', linestyle='--', linewidth=0.5)
     # Add labels for the axes
