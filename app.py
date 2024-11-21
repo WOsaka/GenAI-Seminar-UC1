@@ -1,61 +1,76 @@
 import streamlit as st
 from PIL import Image
 import plotly.graph_objects as go
+import plotly.express as px
 import numpy as np
+import pandas as pd
 import fitz  # PyMuPDF für PDF-Dateien
+from io import BytesIO
 
 # Überschrift
 st.title("2D-Grundriss zu 3D-Darstellung")
+
+# Anweisung zum Hochladen
+st.markdown("### Anleitung:")
+st.markdown("1. Bitte lade eine PDF- oder JPEG-Datei hoch, die den Grundriss enthält.")
+st.markdown("2. Nach dem Upload wird das Bild angezeigt und eine 3D-Darstellung generiert.")
+st.markdown("3. Du kannst das 3D-Ergebnis anschließend herunterladen.")
 
 # Datei-Upload
 uploaded_file = st.file_uploader("Lade eine PDF oder JPEG Datei mit einem Grundriss hoch", type=["jpeg", "jpg", "pdf"])
 
 # Dateiinhalt anzeigen und extrahieren
-if uploaded_file is not None:
+if uploaded_file:
     img = None
     
-    # Für PDF-Dateien extrahieren wir ein Bild der ersten Seite
-    if uploaded_file.name.endswith(".pdf"):
-        doc = fitz.open(uploaded_file)
-        page = doc.load_page(0)  # Lade die erste Seite
-        pix = page.get_pixmap()
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        st.image(img, caption="PDF-Grundriss als Bild", use_column_width=True)
+    try:
+        # Überprüfen, ob es sich um eine PDF handelt
+        if uploaded_file.name.lower().endswith(".pdf"):
+            # Für PDF-Dateien extrahieren wir ein Bild der ersten Seite
+            doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+            page = doc.load_page(0)  # Lade die erste Seite
+            pix = page.get_pixmap()
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            st.image(img, caption="PDF-Grundriss als Bild", use_column_width=True)
         
-    # Für JPEG-Dateien direkt das Bild anzeigen
-    elif uploaded_file.name.endswith((".jpg", ".jpeg")):
-        img = Image.open(uploaded_file)
-        st.image(img, caption="JPEG-Grundriss", use_container_width=True)
+        # Überprüfen, ob es sich um ein JPEG handelt
+        elif uploaded_file.name.lower().endswith((".jpg", ".jpeg")):
+            img = Image.open(uploaded_file)
+            st.image(img, caption="JPEG-Grundriss", use_container_width=True)
+        
+        else:
+            st.error("Die hochgeladene Datei hat ein unbekanntes Format. Bitte lade eine PDF oder JPEG-Datei hoch.")
     
-    # Wenn das Bild extrahiert wurde, weiter mit der 3D-Darstellung
+    except Exception as e:
+        st.error(f"Ein Fehler ist aufgetreten: {e}")
+        img = None
+
+    # Wenn das Bild erfolgreich extrahiert wurde, fahre fort
     if img:
         st.subheader("3D-Darstellung des Grundrisses")
-        
-        # Wir nehmen das Bild und fügen es auf eine 3D-Fläche, als Textur, ein
-        # Konvertiere das Bild in ein Array für die Textur
-        img_array = np.array(img)
-        
-        # Erstellen eines 3D-Modells mit Plotly
-        fig = go.Figure(data=[go.Surface(
-            z=np.zeros_like(img_array),  # Die Z-Achse ist 0, da wir ein flaches Bild als Grundlage verwenden
-            surfacecolor=img_array[:, :, 0],  # Verwende nur die roten Farbkanalwerte als Textur (für die Farben)
-            colorscale='gray',  # Farbskala für Textur
-            colorbar=dict(title="Helligkeit")
-        )])
-        
-        fig.update_layout(
-            title="3D Darstellung des Grundrisses",
-            scene=dict(
-                xaxis_title="X-Achse",
-                yaxis_title="Y-Achse",
-                zaxis_title="Z-Achse"
-            ),
-            scene_camera=dict(
-                eye=dict(x=1.5, y=1.5, z=1)
-            )
-        )
-        
-        # Zeige die 3D-Darstellung an
+
+        # Dummy-Daten erzeugen
+        x = np.linspace(0, 10, 100)
+        y = np.cos(x)
+        data = pd.DataFrame({'x': x, 'y': y})
+
+        # Plotly-Figur erstellen
+        fig = px.line(data, x='x', y='y', labels={'x': 'X-Achse', 'y': 'Y-Achse'})
+
+        # Figur in Streamlit anzeigen
         st.plotly_chart(fig)
 
-# streamlit run app.py in Terminal
+        # Grafik als Datei speichern
+        buffer = BytesIO()
+        fig.write_image(buffer, format="png")  # Alternativ: format="svg" oder "jpeg"
+        buffer.seek(0)  # Zeiger zurück zum Anfang setzen
+
+        # Download-Button hinzufügen
+        st.download_button(
+        label="Download der Grafik als PNG",
+        data=buffer,
+        file_name="3D-Darstellung.png",
+        mime="image/png"
+)
+
+# run and streamlit run app.py in Terminal
