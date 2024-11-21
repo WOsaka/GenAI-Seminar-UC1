@@ -6,6 +6,7 @@ from ezdxf.math import Matrix44
 from ezdxf.addons.drawing import RenderContext, Frontend
 from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
 
+
 def get_wcs_to_image_transform(
     ax: plt.Axes, image_size: tuple[int, int]
 ) -> Matrix44:
@@ -26,31 +27,32 @@ def get_wcs_to_image_transform(
         @ Matrix44.translate(0, image_height + 1, 0)
     )
 
-# create the DXF document
-doc = ezdxf.readfile("GR-conv.dxf")
-msp = doc.modelspace()
+def convert_dxf_to_png(filename_dxf):
+    # create the DXF document
+    doc = ezdxf.readfile(filename_dxf)
+    msp = doc.modelspace()
 
-# export the pixel image
-fig: plt.Figure = plt.figure()
-ax: plt.Axes = fig.add_axes([0, 0, 1, 1])
-ctx = RenderContext(doc)
-out = MatplotlibBackend(ax)
-Frontend(ctx, out).draw_layout(msp, finalize=True)
-fig.savefig("cad.png")
-plt.close(fig)
+    # export the pixel image
+    fig: plt.Figure = plt.figure()
+    ax: plt.Axes = fig.add_axes([0, 0, 1, 1])
+    ctx = RenderContext(doc)
+    out = MatplotlibBackend(ax)
+    Frontend(ctx, out).draw_layout(msp, finalize=True)
+    fig.savefig("converted.png")
+    plt.close(fig)
 
-# reload the pixel image by Pillow (PIL)
-img = Image.open("cad.png")
-draw = ImageDraw.Draw(img)
+    # reload the pixel image by Pillow (PIL)
+    img = Image.open("converted.png")
+    draw = ImageDraw.Draw(img)
 
-# add some annotations to the pixel image by using modelspace coordinates
-m = get_wcs_to_image_transform(ax, img.size)
-a, b, c = (
-    (v.x, v.y)  # draw.line() expects tuple[float, float] as coordinates
-    # transform modelspace coordinates to image coordinates
-    for v in m.transform_vertices([(0.25, 0.75), (0.75, 0.25), (1, 1)])
-)
-draw.line([a, b, c, a], fill=(255, 0, 0))
+    # add some annotations to the pixel image by using modelspace coordinates
+    m = get_wcs_to_image_transform(ax, img.size)
+    a, b, c = (
+        (v.x, v.y)  # draw.line() expects tuple[float, float] as coordinates
+        # transform modelspace coordinates to image coordinates
+        for v in m.transform_vertices([(0.25, 0.75), (0.75, 0.25), (1, 1)])
+    )
+    draw.line([a, b, c, a], fill=(255, 0, 0))
 
 # show the image by the default image viewer
-# img.show()
+#img.show()
