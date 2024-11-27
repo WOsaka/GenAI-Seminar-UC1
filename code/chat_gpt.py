@@ -4,7 +4,7 @@ from openai import AzureOpenAI
 from dotenv import load_dotenv
 import json
 import re
-import converter 
+import converter_ai as converter_ai 
 load_dotenv()
  
 client: AzureOpenAI = AzureOpenAI(

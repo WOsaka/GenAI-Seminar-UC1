@@ -1,7 +1,8 @@
 import streamlit as st
 from PIL import Image
 import os
-import converter as conv
+import converter_ai as c_ai
+import converter_cv as c_cv
 import atexit
 import zipfile
 
@@ -13,7 +14,7 @@ def create_zip_file(zip_filename, files_to_zip):
 
 # Funktion, die beim Schließen der App ausgeführt wird
 def on_close():
-    conv.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+    c_ai.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
 
 def main():
     # Registriere die Funktion zum Ausführen bei App-Schließung
@@ -43,7 +44,8 @@ def main():
         st.image(img, caption='Uploaded Image', use_column_width=True)
 
         # Convert image  
-        conv.main(filename)
+        #c_ai.main(filename)
+        c_cv.main(filename)
 
         # Create zip file for downloading 
         files_to_zip = [r'uploads\output.png', r'uploads\output.dxf']
