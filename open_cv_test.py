@@ -2,10 +2,10 @@ import cv2 as cv
 import numpy as np
 import random 
 
-img = cv.imread("Grundriss Beispiele\Beispiel_David.png")
+#img = cv.imread("Grundriss Beispiele\Beispiel_David.png")
 #img = cv.imread("Grundriss Beispiele\Grundriss_01_EG.jpg")
 #img = cv.imread("Grundriss Beispiele\Ziel\Beispiel_01.png")
-#img = cv.imread("Grundriss Beispiele\Ziel\Beispiel_02.jpg")
+img = cv.imread("Grundriss Beispiele\Ziel\Beispiel_03.jpg")
 
 
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -18,7 +18,7 @@ edges = cv.Canny(blurred, 50, 150)
 binary = cv.adaptiveThreshold(
     blurred, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2
 )
-
+cv.imshow("binary", binary)
 # # Morphological operations
 # kernel = np.ones((3, 3), np.uint8)
 # cleaned = cv.morphologyEx(binary, cv.MORPH_CLOSE, kernel, iterations=1)
@@ -39,12 +39,23 @@ binary = cv.adaptiveThreshold(
 #     x1, y1, x2, y2 = wall[0]
 #     cv.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2) 
 
+image_shape = img.shape
+height, width = image_shape[0], image_shape[1]
+b, g, r = 255, 255, 255  # orange
+image = np.zeros((height, width, 3), np.uint8)
+image[:, :, 0] = b
+image[:, :, 1] = g
+image[:, :, 2] = r
+
+#cv.imshow("A New Image", image)
+
+
 ### This works in detecting most walls 
 _, thresh = cv.threshold(gray, 150, 255, cv.THRESH_BINARY)
-cv.imshow('thresh', thresh) 
+#cv.imshow('thresh', thresh) 
 
 mor_img = cv.morphologyEx(thresh, cv.MORPH_OPEN, (5, 5), iterations=3)
-cv.imshow("mor_img", mor_img)
+#cv.imshow("mor_img", mor_img)
 contours, _ = cv.findContours(mor_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
 sorted_contours = sorted(contours, key=cv.contourArea, reverse=True)
@@ -52,7 +63,7 @@ sorted_contours = sorted(contours, key=cv.contourArea, reverse=True)
 for c in sorted_contours[1:]:
     area = cv.contourArea(c)
     if area > 1000:
-        cv.drawContours(img, [c], -1, (random.randrange(0, 255), random.randrange(0, 256), random.randrange(0, 255)), 3)
+        cv.drawContours(image, [c], -1, (random.randrange(0, 255), random.randrange(0, 256), random.randrange(0, 255)), 3)
 
 
 
@@ -106,6 +117,8 @@ for c in sorted_contours[1:]:
 # print(rooms)
 # cv.imshow("Detected Rooms", output_image)
 
-cv.imshow('img', img) 
+cv.imshow('img', image) 
 cv.waitKey(0) 
 cv.destroyAllWindows() 
+
+cv.imwrite
