@@ -1,51 +1,69 @@
 import streamlit as st
 from PIL import Image
 import os
-import chat_gpt
-import ezdxf_creator
-import dxf_viewer
+import converter as conv
+import atexit
+import zipfile
 
-# Ensure the upload directory exists
-UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+def create_zip_file(zip_filename, files_to_zip):
+    # Create a ZIP file
+    with zipfile.ZipFile(zip_filename, 'w') as zipf:
+        for file in files_to_zip:
+            zipf.write(file, os.path.basename(file))
 
-# Title of the application
-st.title('Image Upload and Processing App')
+# Funktion, die beim Schließen der App ausgeführt wird
+def on_close():
+    conv.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
 
-# Upload image file
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+def main():
+    # Registriere die Funktion zum Ausführen bei App-Schließung
+    atexit.register(on_close)
 
-if uploaded_file is not None:
-    # Save the uploaded file
-    filename = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
-    with open(filename, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    # Ensure the upload directory exists
+    UPLOAD_FOLDER = 'uploads'
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
 
-    # Open the uploaded image
-    img = Image.open(filename)
+    # Title of the application
+    st.title('Image Upload and Processing App')
 
-    # Display the original image
-    st.image(img, caption='Uploaded Image', use_column_width=True)
+    # Upload image file
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-    # Convert image to grayscale
-    converted_img = img.convert('L') 
-    processed_filename = os.path.join(UPLOAD_FOLDER, "processed_" + uploaded_file.name)
-    converted_img.save(processed_filename)
-    response = chat_gpt.chat_with_gpt(processed_filename)
+    if uploaded_file is not None:
+        # Save the uploaded file
+        filename = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
+        with open(filename, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+
+        # Open the uploaded image
+        img = Image.open(filename)
+
+        # Display the original image
+        st.image(img, caption='Uploaded Image', use_column_width=True)
+
+        # Convert image  
+        conv.main(filename)
+
+        # Create zip file for downloading 
+        files_to_zip = [r'uploads\output.png', r'uploads\output.dxf']
+        zip_filename = r'uploads\output.zip'
+        create_zip_file(zip_filename, files_to_zip)
+
+        # Open the processed image
+        converted_img = Image.open(r"uploads\output.png")
         
-    ezdxf_creator.create_floor_plan(chat_gpt.extract_rooms(response), "app_created_floorplan.dxf")
-    dxf_viewer.convert_dxf_to_png("app_created_floorplan.dxf")
+        # Display the image in Streamlit
+        st.image(converted_img, caption='Processed Image', use_column_width=True)
 
-    # Display the processed image
-    st.image("converted.png", caption='Generated CAD file', use_column_width=True)
-    #st.image(converted_img, caption='Processed Image', use_column_width=True)
+        # Provide a download link for the processed image
+        with open(r"uploads\output.zip", "rb") as file:
+            btn = st.download_button(
+                label="Download Processed Image",
+                data=file,
+                file_name="processed_file.zip",
+                mime="application/zip"
+            )
 
-    # Provide a download link for the processed image
-    with open(processed_filename, "rb") as file:
-        btn = st.download_button(
-            label="Download Processed Image",
-            data=file,
-            file_name="processed_" + uploaded_file.name,
-            mime="image/png"
-        )
+if __name__ == "__main__":
+    main()
