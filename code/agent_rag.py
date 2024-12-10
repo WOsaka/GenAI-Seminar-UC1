@@ -1,6 +1,7 @@
 import base64
 import os
 
+import openai
 from autogen import ConversableAgent
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
@@ -89,52 +90,84 @@ response = architect.generate_reply(
 print(response)
 
 
+# define the search client (AI Search)
 search_client = SearchClient(
     endpoint=os.environ.get("AI_SEARCH_ENDPOINT"),
     index_name="vector-1733605458495",
     credential=AzureKeyCredential(os.environ.get("AI_SEARCH_API_KEY")),
 )
 
+
+# define the embedding model
+def generate_embeddings(texts):
+    response = openai.embeddings.create(
+        model="text-embedding-ada-002",  # Embedding model
+        input=texts,
+    )
+    return [embedding["embedding"] for embedding in response["data"]]
+
+
+# define vector search engine
+def search_vector(search_client, query, top_k=5):
+    query_embedding = generate_embeddings([query])[0]  # Get embedding for query
+    results = search_client.search(
+        search_text="*",  # Use '*' to search all documents
+        vector=query_embedding,  # Pass the query embedding
+        vector_configuration_name="vectorSearchConfig",
+        top=top_k,  # Return top-k results
+    )
+    return results
+
+
+# Define the user Prompt
+
+query = "Hi, I want to know the guideline for wheelchairs"
+
 # This prompt provides instructions to the model
-GROUNDED_PROMPT = """
+GROUNDED_PROMPT = f"""
 You are a supbject matter expert assistant that explains guidelines based on documentation.
 Answer the query using only the sources provided below in a friendly and concise bulleted manner.
 Answer ONLY with the facts listed in the list of sources below.
 If there isn't enough information below, say you don't know.
 Do not generate answers that don't use the sources below.
 Query: {query}
-Sources:\n{sources}
 """
 
-# Query is the question being asked. It's sent to the search engine and the LLM.
-query = "Is this place suitable for wheel chair use"
+vectorised_query = search_vector(search_client, GROUNDED_PROMPT)
 
-# Set up the search results and the chat thread.
+# This is where RAG starts
+
+
 # Retrieve the selected fields from the search index related to the question.
 search_results = search_client.search(
-    search_text=query,
+    search_text=vectorised_query,
     top=5,
     query_type="semantic",
+    semantic_fields=["text_vector"],
 )
+search_results = list(search_results)
+
+# Augment
 sources_formatted = "\n".join(
     [f'{document["title"]}:{document["chunk"]}' for document in search_results]
 )
 
+# Generate
+# SME aka RAG Bot called sme for subject matter expert
+
 sme = ConversableAgent(
     name="sme",
-    system_message=task,
+    system_message=query,
     llm_config=llm_config,
 )
+
+print(sources_formatted)
 
 reply = sme.generate_reply(
     messages=[
         {
             "role": "user",
             "content": [
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
-                },
                 {
                     "type": "text",
                     "text": GROUNDED_PROMPT.format(
