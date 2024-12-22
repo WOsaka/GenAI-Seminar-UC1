@@ -129,7 +129,7 @@ def put_text_on_image(image_path, json_file_path, output_path, confidence_thresh
 
                     # Calculate the top-left corner of the bounding box to place the text
                     top_left_x = min(pt['x'] for pt in bounding_polygon)
-                    top_left_y = min(pt['y'] for pt in bounding_polygon)
+                    top_left_y = max(pt['y'] for pt in bounding_polygon)
 
                     # Put the text on the image
                     cv.putText(image, line['text'], (top_left_x, top_left_y), cv.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 0), 2, cv.LINE_AA, False)
