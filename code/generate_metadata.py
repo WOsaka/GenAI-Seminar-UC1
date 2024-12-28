@@ -19,7 +19,7 @@ def query_gpt40(
     messages: list[dict[str, str]],
 ) -> str:
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=messages,
         max_tokens= 4096,
         n=1,
@@ -67,7 +67,50 @@ def extract_metadata(image_path):
     final_response = query_gpt40(messages)
     return final_response
 
-response = extract_metadata("Neue Grundrisse/D-Str/D-Str._Obergeschoss_v4_cropped.jpg")
+def control_metadata(image_path, gpt_analysis):
+    base64_image = encode_image(image_path)
+    messages = [{
+        "role": "system", "content": """
+            You are a control instance that is provided with a floor plan and an analaysis of the given floorplan based on the following instructions:
+                
+                You are an experienced floor plan analyst. Your task is to analyse the given analysis of a floor plan and check the  following information:
+                What rooms are shown, give the name and the size in m² and the number of windows. 
+                If the size is not mentioned estimate it using the provided measurements on the outside of the plan.
+                If you can not find any measurement, try to estimate them in relation to other rooms.
+                Measurements can include 4 digits, meaning half a cm.
+                If a measurement is equal to 2.07m that is a door and should be ignored. Try to find other measurements.
+                Always include the measurements in your answer.
+                Analyse the hallways and give an exact measurement of their width.
+                Analyse the doors and give the measurement of them. Every door has 2 values, the smaller one is the width and the larger one is the height.
+                Where is the entrance? Is it a door or an elevator or stairs? 
+                Analyse the walls and their measurements, consider a wall with the size of 11.5 as not load-bearing. Give information which walls are load-bearing.
+                
+            As control instance you are supposed to control if the analysis is correct and all measurements are extracted correct. 
+            Recheck every measurement on the side and compare the different rooms to check if the matching of outside measurements and rooms is reasonable 
+            Give feedback and explain which inaccuracys you found. 
+    """}, 
+    {
+        "role": "user", "content": [
+                {"type": "text", "text": "Analyze this floor plan image and provide the information as specified."},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+                {"type": "text", "text": gpt_analysis }
+                ]
+    }
+    ]
+
+    final_response = query_gpt40(messages)
+    return final_response
+
+
+response = extract_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg")
+control = control_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response)
+
+# response = extract_metadata("pipeline/2.1_text_added.png")
+# control = control_metadata("pipeline/2.1_text_added.png", response)
+
 #response = extract_metadata("Grundriss Beispiele/Beispiel_Niklas.jpg")
+
+
 print(f"GPT-40 response: {response}")
+print(f"GPT-40 control: {control}")
 
