@@ -143,10 +143,12 @@ if __name__ == "__main__":
      main()
 '''
 
-"""
-response = chat_with_gpt('Grundriss Beispiele\Ziel\Beispiel_02.jpg')
+
+response = chat_with_gpt('Grundriss Beispiele/Beispiel_Niklas.jpg')
+#response = chat_with_gpt('Neue Grundrisse\D-Str\D-Str. Obergeschoss.png')
 print(f"GPT-40 response: {response}")
-    
+
+"""  
 converter.create_floor_plan(extract_rooms(response), "other_floor_plan2.dxf")
 converter.plot_rooms(extract_rooms(response))
 """
