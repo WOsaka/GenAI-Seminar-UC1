@@ -22,7 +22,7 @@ llm_config = {
     "temperature": 0.8,
 }
 
-image_path = "Grundriss Beispiele/wuestermarke1969.jpg"
+image_path = "Neue Grundrisse/D-Str./D-Str. Obergeschoss.png"
 cad_path = "uploads.png"
 
 
