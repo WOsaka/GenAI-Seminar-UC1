@@ -196,7 +196,7 @@ def dxf_to_png(dxf_path, png_path):
   plt.close(fig)
 
 def main(image_path):
-    confidence_threshold = 0.65
+    confidence_threshold = 0.1
     call_vision(image_path, r'uploads\result_vision') 
     draw_polygons_around_words(image_path, r'uploads\result_vision.json', r'pipeline\1_text_highlighted.png', confidence_threshold) 
     remove_text_from_image(image_path, r'uploads\result_vision.json', r'uploads\output.png', confidence_threshold) 

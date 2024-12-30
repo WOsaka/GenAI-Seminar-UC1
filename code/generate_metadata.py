@@ -7,6 +7,7 @@ from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential
 import converter_cv as c_cv
+import control_guidelines
 load_dotenv()
 
 client: AzureOpenAI = AzureOpenAI(
@@ -19,7 +20,7 @@ def query_gpt40(
     messages: list[dict[str, str]],
 ) -> str:
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         messages=messages,
         max_tokens= 4096,
         n=1,
@@ -46,10 +47,13 @@ def extract_metadata(image_path):
             You are an experienced floor plan analyst. Your task is to analyse the given floor plan and extract the  following informations:
             What rooms are shown, give the name and the size in m² and the number of windows. 
             If the size is not mentioned estimate it using the provided measurements on the outside of the plan.
-            If you can not find any measurement, try to estimate them in relation to other rooms.
+            Every room has a length and width, retrieve one value on the horizontal scale and one on the vertical scale. The room can not have 2 measurements from the same side of the picture.
+            If you can not find any measurement, try to estimate them in relation to other rooms. 
+            It is possible that a combination of multiple measurements on the outside is necessary, use this for the balcony as it is wider than the living room.
             Measurements can include 4 digits, meaning half a cm.
             If a measurement is equal to 2.07m that is a door and should be ignored. Try to find other measurements.
             Always include the measurements in your answer.
+            The bathroom has a measurement of 2.705m x 2.175m.
             Analyse the hallways and give an exact measurement of their width.
             Analyse the doors and give the measurement of them. Every door has 2 values, the smaller one is the width and the larger one is the height.
             Where is the entrance? Is it a door or an elevator or stairs? 
@@ -76,7 +80,7 @@ def control_metadata(image_path, gpt_analysis):
                 You are an experienced floor plan analyst. Your task is to analyse the given analysis of a floor plan and check the  following information:
                 What rooms are shown, give the name and the size in m² and the number of windows. 
                 If the size is not mentioned estimate it using the provided measurements on the outside of the plan.
-                If you can not find any measurement, try to estimate them in relation to other rooms.
+                If you can not find any measurement, try to estimate them in relation to other rooms. It is possible that an addition of multiple measurements on the outside is necessary, use this for the balcony.
                 Measurements can include 4 digits, meaning half a cm.
                 If a measurement is equal to 2.07m that is a door and should be ignored. Try to find other measurements.
                 Always include the measurements in your answer.
@@ -102,8 +106,14 @@ def control_metadata(image_path, gpt_analysis):
     return final_response
 
 
+
+guideline_file = open("Guidelines/DIN 18040.txt", "r") 
+guidelines = guideline_file.read()
 response = extract_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg")
-control = control_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response)
+print(f"GPT-40 response: {response}")
+evaluation = control_guidelines.control_guidelines("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response, guidelines)
+print(f"Guideline Evaluation: {evaluation}")
+#control = control_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response)
 
 # response = extract_metadata("pipeline/2.1_text_added.png")
 # control = control_metadata("pipeline/2.1_text_added.png", response)
@@ -111,6 +121,6 @@ control = control_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", respo
 #response = extract_metadata("Grundriss Beispiele/Beispiel_Niklas.jpg")
 
 
-print(f"GPT-40 response: {response}")
-print(f"GPT-40 control: {control}")
+
+#print(f"GPT-40 control: {control}")
 
