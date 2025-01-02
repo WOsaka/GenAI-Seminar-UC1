@@ -1,3 +1,4 @@
 .env
 .conda
+test_azure.py
 Basisdaten/*
