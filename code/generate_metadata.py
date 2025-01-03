@@ -109,9 +109,11 @@ def control_metadata(image_path, gpt_analysis):
 
 guideline_file = open("Guidelines/DIN 18040.txt", "r") 
 guidelines = guideline_file.read()
+cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
+cost_information = cost_information_file.read()
 response = extract_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg")
 print(f"GPT-40 response: {response}")
-evaluation = control_guidelines.control_guidelines("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response, guidelines)
+evaluation = control_guidelines.control_guidelines("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response, guidelines, cost_information)
 print(f"Guideline Evaluation: {evaluation}")
 #control = control_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response)
 

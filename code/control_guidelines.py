@@ -34,7 +34,7 @@ def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
-def control_guidelines(image_path, metadata, guidelines):
+def control_guidelines(image_path, metadata, guidelines, cost_information):
     base64_image = encode_image(image_path)
     c_cv.call_vision(image_path, "metadata_ocr")
     c_cv.draw_polygons_around_words(image_path, "metadata_ocr.json","metadata_text_highlighted.png", 0.5)
@@ -46,13 +46,18 @@ def control_guidelines(image_path, metadata, guidelines):
             Give recomendations of small changes, that will improve the apartment in the given aspects.
             You have the opportunity to move the non load-bearing walls if that makes rooms like the bathroom larger and more accesible.
             Give an evaluation on the meaningfullness of that approach.
+             
+            After that give recommendations based on the possible services mentioned in the cost information and calculate an estimated price of them.
+            
+            Please give your output in german.
     """}, 
     {
         "role": "user", "content": [
                 {"type": "text", "text": "Analyze this floor plan image and provide the information as specified."},
                 {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
                 {"type": "text", "text": "This is the provided information" +  metadata },
-                {"type": "text", "text": "This is the provided guideline" + guidelines}
+                {"type": "text", "text": "This is the provided guideline" + guidelines},
+                 {"type": "text", "text": "This is the provided cost information" + cost_information}
                 ]
     }
     ]
