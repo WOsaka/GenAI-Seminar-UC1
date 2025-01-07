@@ -123,7 +123,7 @@ def find_contours(image_path):
   cv.imwrite(r"pipeline\3_image_binary.png", binary)
 
   # Apply Canny edge detection
-  edges = cv.Canny(binary, 215, 370)
+  edges = cv.Canny(binary, 215, 370, L2gradient=True)
   cv.imwrite(r"pipeline\4_image_canny.png", edges)
 
   # Find contours
