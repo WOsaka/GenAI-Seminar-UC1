@@ -1,96 +1,140 @@
-import base64
 import os
-from openai import AzureOpenAI
-import openai
-from autogen import ConversableAgent
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
+import json
+import requests
 from dotenv import load_dotenv
 import streamlit as st
 from PIL import Image
-import zipfile
+import base64
+from io import BytesIO
+from openai import AzureOpenAI
+import converter_ai as c_ai
+import converter_cv as c_cv
 import atexit
+import zipfile
+
+# Page configuration
+st.set_page_config(page_title="RePlanIt", layout="wide")
 
 # Lade Umgebungsvariablen
 load_dotenv()
 
-# Setze den OpenAI-API-Schlüssel und Azure-API-Schlüssel
+# Setze deinen OpenAI-API-Schlüssel hier ein
 client: AzureOpenAI = AzureOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
     azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT"),
 )
 
-# Azure Search Client für RAG
-search_client = SearchClient(
-    endpoint=os.environ.get("AI_SEARCH_ENDPOINT"),
-    index_name="vector-1733605458495",
-    credential=AzureKeyCredential(os.environ.get("AI_SEARCH_API_KEY")),
-)
+def fetch_search_results(query):
+    """Funktion, um Daten aus Azure Cognitive Search abzurufen."""
+    search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
+    search_key = os.getenv("AZURE_SEARCH_KEY")
+    index_name = os.getenv("AZURE_SEARCH_INDEX")
 
-# Konfiguration des LLM
-llm_config = {
-    "model": "gpt-4o-mini",
-    "api_key": os.environ.get("OPENAI_API_KEY"),
-    "temperature": 0.8,
-}
+    url = f"{search_endpoint}/indexes/{index_name}/docs/search?api-version=2021-04-30-Preview"
+    headers = {"Content-Type": "application/json", "api-key": search_key}
+    payload = {"search": query}
+
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+
+    results = response.json()
+    return results.get("value", [])  # Extrahiere die Treffer aus der Antwort
+
+def ask_gpt(messages):
+    """Sendet die Unterhaltung an GPT und erhält eine Antwort."""
+    try:
+        # Extrahiere die letzte Nachricht des Benutzers
+        user_message = next(msg["content"] for msg in reversed(messages) if msg["role"] == "user")
+
+        # Hole Suchergebnisse aus Azure Cognitive Search
+        search_results = fetch_search_results(user_message)
+
+        # Bereite die Ergebnisse auf (mit Fallback-Werten)
+        search_content = "\n".join([
+            f"- {result.get('title', 'Kein Titel')}: {result.get('description', 'Keine Beschreibung')}"
+            for result in search_results
+        ])
+
+        # Füge die Suchergebnisse in den Konversationstext ein
+        messages.append({"role": "assistant", "content": f"Hier sind relevante Informationen:\n{search_content}"})
+
+        # Senden der Anfrage an das Azure OpenAI-Modell
+        response = client.chat.completions.create(
+            model=os.getenv("AZURE_OAI_DEPLOYMENT"),
+            temperature=0.5,
+            max_tokens=1000,
+            messages=messages
+        )
+
+        # Antwort extrahieren
+        response_text = response.choices[0].message.content
+        return response_text
+
+    except Exception as e:
+        return f"Fehler bei der Kommunikation mit GPT: {str(e)}"
 
 def create_zip_file(zip_filename, files_to_zip):
+    """Erstellt eine ZIP-Datei mit angegebenen Dateien."""
     with zipfile.ZipFile(zip_filename, 'w') as zipf:
         for file in files_to_zip:
             zipf.write(file, os.path.basename(file))
 
-def ask_gpt(messages):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=messages,
-            max_tokens=4096,
-            n=1,
-            temperature=0.05,
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Fehler bei der Kommunikation mit GPT: {str(e)}"
-
-def encode_image(image_path: str) -> str:
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-def generate_embeddings(texts):
-    response = openai.embeddings.create(
-        model="text-embedding-ada-002",
-        input=texts,
-    )
-    return [embedding["embedding"] for embedding in response["data"]]
-
-def search_vector(query, top_k=5):
-    query_embedding = generate_embeddings([query])[0]
-    results = search_client.search(
-        search_text="*",
-        vector=query_embedding,
-        vector_configuration_name="vectorSearchConfig",
-        top=top_k,
-    )
-    return results
-
 def on_close():
-    # Add logic for cleaning up resources
-    pass
+    """Funktion, die beim Schließen der App ausgeführt wird."""
+    c_ai.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+
+def image_to_base64(img_path):
+    """Konvertiert ein Bild in Base64."""
+    with open(img_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
 
 def main():
+    # Registriere die Funktion zum Ausführen bei App-Schließung
     atexit.register(on_close)
 
+    # Ensure the upload directory exists
     UPLOAD_FOLDER = 'uploads'
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
 
-    st.title('Image Upload and Chatbot App')
+    # Logo in der oberen linken Ecke hinzufügen
+    logo_path = "logo.png"  # Pfad zum Logo
+    if os.path.exists(logo_path):
+        base64_image = image_to_base64(logo_path)
+        logo_html = f"""
+        <div style="position: absolute; top: 0px; right: 10px; z-index: 1000;">
+            <img src="data:image/png;base64,{base64_image}" alt="RePlanIt Logo" style="width: 150px;">
+        </div>
+        """
+        st.markdown(logo_html, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["Bildverarbeitung", "Chatbot"])
+    # Inject custom CSS to move the tabs down
+    st.markdown(
+        """
+        <style>
+        div.streamlit-tabs ul {
+            margin-top: 1000px; /* Adjust the distance from the top */
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Titel
+    st.title('RePlanIt')
+
+    # Tabs für die Funktionen
+    tab1, tab2, tab3 = st.tabs(["Anleitung", "Bildverarbeitung", "Chatbot"])
 
     with tab1:
+        st.header("Anleitung")
+        st.write("Willkommen bei RePlanIt! Hier können Sie Bilder hochladen, um Baupläne zu erstellen, "
+                 "und mit unserem Chatbot altersgerechte Anpassungen planen.")
+
+    with tab2:
         st.header("Bildverarbeitung")
+        # Upload image file
         uploaded_file = st.file_uploader("Wählen Sie ein Bild aus...", type=["jpg", "jpeg", "png"])
 
         if uploaded_file is not None:
@@ -101,69 +145,43 @@ def main():
             img = Image.open(filename)
             st.image(img, caption='Hochgeladenes Bild', use_column_width=True)
 
-            base64_image = encode_image(filename)
-            task = """Your task is to analyze the floor plan and provide the JSON representation of rooms and their coordinates."""
-            
-            architect = ConversableAgent(
-                name="architect",
-                system_message=task,
-                llm_config=llm_config,
-            )
+            c_cv.main(filename)
 
-            response = architect.generate_reply(
-                messages=[{
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Analyze this floor plan image and provide the JSON representation of rooms.",
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
-                        }
-                    ],
-                }]
-            )
+            files_to_zip = [r'uploads\output.png', r'uploads\output.dxf']
+            zip_filename = r'uploads\output.zip'
+            create_zip_file(zip_filename, files_to_zip)
 
-            st.write(response)
+            converted_img = Image.open(r"uploads\output.png")
+            st.image(converted_img, caption='Verarbeitetes Bild', use_column_width=True)
 
-    with tab2:
+            with open(r"uploads\output.zip", "rb") as file:
+                st.download_button(
+                    label="Verarbeitetes Bild herunterladen",
+                    data=file,
+                    file_name="processed_file.zip",
+                    mime="application/zip"
+                )
+
+    with tab3:
         st.header("Chatbot")
-        
         if "messages" not in st.session_state:
             st.session_state["messages"] = [{"role": "system", "content": "Du bist ein hilfreicher Assistent."}]
-        
+
+        for message in st.session_state["messages"]:
+            if message["role"] == "user":
+                st.markdown(
+                    f"<div style='text-align: right;'><strong><em>Du:</em></strong> <em>{message['content']}</em></div>",
+                    unsafe_allow_html=True,
+                )
+            elif message["role"] == "assistant":
+                st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
+
         def handle_input():
             user_input = st.session_state["user_input"]
             if user_input:
                 st.session_state["messages"].append({"role": "user", "content": user_input})
-
-                search_results = search_vector(user_input)
-
-                sources_formatted = "\n".join(
-                    [f'{document["title"]}:{document["chunk"]}' for document in search_results]
-                )
-
-                sme = ConversableAgent(
-                    name="sme",
-                    system_message=user_input,
-                    llm_config=llm_config,
-                )
-
-                reply = sme.generate_reply(
-                    messages=[{
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": f"Answer the following using the provided sources:\n{sources_formatted}"
-                            }
-                        ],
-                    }]
-                )
-
-                st.session_state["messages"].append({"role": "assistant", "content": reply})
+                response = ask_gpt(st.session_state["messages"])
+                st.session_state["messages"].append({"role": "assistant", "content": response})
                 st.session_state["user_input"] = ""
 
         st.text_input(
@@ -171,12 +189,6 @@ def main():
             key="user_input",
             on_change=handle_input
         )
-
-        for message in reversed(st.session_state["messages"]):
-            if message["role"] == "user":
-                st.markdown(f"<div style='text-align: right;'><strong><em>Du:</em></strong> <em>{message['content']}</em></div>", unsafe_allow_html=True)
-            elif message["role"] == "assistant":
-                st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
 
         if st.button("Konversation löschen"):
             st.session_state["messages"] = [{"role": "system", "content": "Du bist ein hilfreicher Assistent."}]
