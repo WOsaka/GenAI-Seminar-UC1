@@ -4,6 +4,11 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 import ezdxf
+import roboflow
+import json
+import shutil
+from PIL import Image, ImageDraw
+from shapely.geometry import Point, Polygon
 from ezdxf.addons.drawing import RenderContext, Frontend
 from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
@@ -12,6 +17,20 @@ from azure.core.credentials import AzureKeyCredential
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def clear_folder(folder_path):
+    # List all files and directories in the folder
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # Remove the file or link
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Remove the directory and its contents
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
 
 
 def call_vision(image_path, json_output_path):
@@ -177,16 +196,10 @@ def find_contours(image_path):
     cv.imwrite(r"pipeline\4_image_canny.png", edges)
 
     # Find contours
-    #   contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    contours, cont = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    #   contours, _ = cv.findContours(cont, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-
-    cv.drawContours(img.fill(), contours, -1, (0, 255, 0), 2)
+    cv.drawContours(img, contours, -1, (0, 255, 0), 2)
     cv.imwrite(r"pipeline\5_image_contours.png", img)
-
-    #   cv.drawContours(img, contours, -1, (0, 255, 0), 2)
-    #   cv.imwrite(r"pipeline\5_image_contours.png", img)
 
     return (contours, image_height)
 
@@ -227,18 +240,234 @@ def dxf_to_png(dxf_path, png_path):
     plt.close(fig)
 
 
+def convert_to_jpg(input_path, output_path):
+    # Öffne das Bild
+    img = Image.open(input_path)
+
+    # Konvertiere das Bild in RGB (JPG unterstützt keine Transparenz)
+    rgb_img = img.convert("RGB")
+
+    # Speichere das Bild als JPG
+    rgb_img.save(output_path, "JPEG")
+
+
+def call_roboflow(image):
+    api_key = os.environ.get("ROBOFLOW_API_KEY")
+    rf = roboflow.Roboflow(api_key)
+
+    project = rf.workspace().project("segmenting-a-floor-plan")
+    model = project.version("1").model
+
+    # predict on a local image
+    # prediction =
+    return model.predict(image)
+
+
+def save_json(data, path_to):
+    # Writing JSON data to the file
+    with open(path_to, "w") as json_file:
+        json.dump(data, json_file)
+
+
+def delete_replace_door_window(image_path, confidence):
+    # Roboflow
+    convert_to_jpg(image_path, r"data\segment_floorplan.jpg")
+    prediction = call_roboflow(r"data\segment_floorplan.jpg")
+    data = prediction.json()
+    save_json(data, r"data\segment_floorplan.json")
+
+    # Load the image
+    image_path = r"data\segment_floorplan.jpg"
+    image = Image.open(image_path)
+
+    # Load the coordinates from the JSON file
+    with open(r"data\segment_floorplan.json", "r") as file:
+        data = json.load(file)
+
+    # Create a drawing context
+    draw = ImageDraw.Draw(image)
+
+    # Fill the specified areas for "door" or "window" classes
+    for prediction in data["predictions"]:
+        if prediction["class"] in ["door", "window"]:
+            points = [tuple(point.values()) for point in prediction["points"]]
+            color = (
+                255,
+                255,
+                255,
+            )  # Using white color for filling, you can change it as needed
+            draw.polygon(points, fill=color)
+
+    # Fill the specified areas for "door" or "window" classes
+    for prediction in data["predictions"]:
+        if (
+            prediction["class"] in ["door", "window"]
+            and prediction["confidence"] > confidence
+        ):
+            # Extract points
+            points = [tuple(point.values()) for point in prediction["points"]]
+            # Get min and max coordinates
+            min_x = min(point[0] for point in points)
+            max_x = max(point[0] for point in points)
+            min_y = min(point[1] for point in points)
+            max_y = max(point[1] for point in points)
+
+            fill_color = (
+                255,
+                255,
+                255,
+            )  # White color for filling
+            outline_color = (
+                0,
+                0,
+                0,
+            )  # Black color for outline
+
+            if prediction["class"] == "window":
+                # Draw a rectangle using min and max coordinates with fill and outline
+                draw.rectangle(
+                    [min_x, min_y, max_x, max_y],
+                    fill=fill_color,
+                    outline=outline_color,
+                    width=3,
+                )
+
+                # Draw a horizontal line in the middle of the rectangle
+
+                length_x = max_x - min_x
+                length_y = max_y - min_y
+                if length_x > length_y:
+                    middle_y = (min_y + max_y) // 2
+                    draw.line(
+                        [min_x, middle_y, max_x, middle_y], fill=outline_color, width=2
+                    )
+                else:
+                    middle_x = (min_x + max_x) // 2
+                    draw.line(
+                        [middle_x, min_y, middle_x, max_y], fill=outline_color, width=2
+                    )
+
+            elif prediction["class"] == "door":
+                polygon = Polygon(points)
+
+                # Padding to check orientation of door
+                padding = 10
+
+                # Define the point to check
+                corner_points = {
+                    "upper_left": (min_x + padding, min_y + padding),
+                    "lower_left": (min_x + padding, max_y - padding),
+                    "upper_right": (max_x - padding, min_y + padding),
+                    "lower_right": (max_x - padding, max_y - padding),
+                }
+
+                for point_to_check in corner_points:
+                    point = Point(corner_points[point_to_check])
+
+                    # Check if the point is inside the polygon
+                    is_inside = polygon.contains(point)
+
+                    if not is_inside:
+                        # Width of line for doors
+                        width = 2
+
+                        if point_to_check == "upper_left":
+                            draw.line(
+                                [max_x, min_y, max_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [max_x, max_y, min_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [max_x, min_y, min_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                        elif point_to_check == "lower_left":
+                            draw.line(
+                                [min_x, min_y, max_x, min_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [max_x, min_y, max_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [min_x, min_y, max_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                        elif point_to_check == "upper_right":
+                            draw.line(
+                                [min_x, min_y, min_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [min_x, max_y, max_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [min_x, min_y, max_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                        elif point_to_check == "lower_right":
+                            draw.line(
+                                [min_x, max_y, min_x, min_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [min_x, min_y, max_x, min_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+                            draw.line(
+                                [max_x, min_y, min_x, max_y],
+                                fill=outline_color,
+                                width=width,
+                            )
+
+    # Save the modified image
+    output_paths = [r"data/output.png", r"uploads/output.png"]
+    for output_path in output_paths:
+        image.save(output_path)
+
+
 def main(image_path):
-    # confidence_threshold = 0
-    # call_vision(image_path, r'uploads\result_vision')
-    # draw_polygons_around_words(image_path, r'uploads\result_vision.json', r'pipeline\1_text_highlighted.png', confidence_threshold)
-    # remove_text_from_image(image_path, r'uploads\result_vision.json', r'uploads\output.png', confidence_threshold)
+    confidence_vision = 0
+    confidence_roboflow = 0.4
+    delete_replace_door_window(image_path, confidence_roboflow)
+    call_vision(r"uploads\output.png", r"uploads\result_vision")
+    draw_polygons_around_words(
+        image_path,
+        r"uploads\result_vision.json",
+        r"pipeline\1_text_highlighted.png",
+        confidence_vision,
+    )
+    remove_text_from_image(
+        r"uploads\output.png",
+        r"uploads\result_vision.json",
+        r"uploads\output.png",
+        confidence_vision,
+    )
     # put_text_on_image(r"pipeline\2_text_removed.png", r"uploads\result_vision.json", r"pipeline/2.1_text_added.png", confidence_threshold)
-    contours, image_height = find_contours(r"pipeline\2_text_removed.png")
-    # contours, image_height = find_contours(r'uploads\output.png')
+
+    contours, image_height = find_contours(r"uploads\output.png")
     contours_to_dxf(contours, r"uploads\output.dxf", image_height)
     dxf_to_png(r"uploads\output.dxf", r"uploads\output.png")
 
 
 # Example usage
 if __name__ == "__main__":
-    main(r"pipeline\2_text_removed.png")
+    main(r"Neue Grundrisse\image.png")
+    # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+    # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\data")
