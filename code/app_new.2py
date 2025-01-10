@@ -1,12 +1,10 @@
-import os
-import json
-import requests
-from dotenv import load_dotenv
 import streamlit as st
 from PIL import Image
+import os
 import base64
 from io import BytesIO
 from openai import AzureOpenAI
+from dotenv import load_dotenv
 import converter_ai as c_ai
 import converter_cv as c_cv
 import atexit
@@ -25,58 +23,6 @@ client: AzureOpenAI = AzureOpenAI(
     azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT"),
 )
 
-def fetch_search_results(query):
-    """Funktion, um Daten aus Azure Cognitive Search abzurufen."""
-    search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
-    search_key = os.getenv("AZURE_SEARCH_KEY")
-    index_name = os.getenv("AZURE_SEARCH_INDEX")
-
-    url = f"{search_endpoint}/indexes/{index_name}/docs/search?api-version=2021-04-30-Preview"
-    headers = {"Content-Type": "application/json", "api-key": search_key}
-    payload = {"search": query}
-
-    response = requests.post(url, headers=headers, json=payload)
-    response.raise_for_status()
-
-    results = response.json()
-    return results.get("value", [])  # Extrahiere die Treffer aus der Antwort
-
-def ask_gpt(messages):
-    """Sendet die Unterhaltung an GPT und erhält eine Antwort."""
-    try:
-        # Extrahiere die letzte Nachricht des Benutzers
-        user_message = next(msg["content"] for msg in reversed(messages) if msg["role"] == "user")
-
-        # Hole Suchergebnisse aus Azure Cognitive Search
-        search_results = fetch_search_results(user_message)
-        is_from_rag = bool(search_results)  # Flag, um zu kennzeichnen, ob Ergebnisse vorliegen
-
-        # Bereite die Ergebnisse auf (mit Fallback-Werten)
-        if is_from_rag:
-            search_content = "\n".join([
-                f"- {result.get('title', 'Kein Titel')}: {result.get('description', 'Keine Beschreibung')}"
-                for result in search_results
-            ])
-            messages.append({"role": "assistant", "content": f"Hier sind relevante Informationen aus der Suche:\n{search_content}"})
-        else:
-            messages.append({"role": "assistant", "content": "Keine relevanten Suchergebnisse gefunden."})
-
-        # Senden der Anfrage an das Azure OpenAI-Modell
-        response = client.chat.completions.create(
-            model=os.getenv("AZURE_OAI_DEPLOYMENT"),
-            temperature=0.5,
-            max_tokens=1000,
-            messages=messages
-        )
-
-        # Antwort extrahieren
-        response_text = response.choices[0].message.content
-        source_indicator = "Quelle: RAG-Suchergebnisse" if is_from_rag else "Quelle: ChatGPT (keine Suchergebnisse)"
-        return f"{response_text}\n\n{source_indicator}"
-
-    except Exception as e:
-        return f"Fehler bei der Kommunikation mit GPT: {str(e)}"
-
 def create_zip_file(zip_filename, files_to_zip):
     """Erstellt eine ZIP-Datei mit angegebenen Dateien."""
     with zipfile.ZipFile(zip_filename, 'w') as zipf:
@@ -85,7 +31,21 @@ def create_zip_file(zip_filename, files_to_zip):
 
 def on_close():
     """Funktion, die beim Schließen der App ausgeführt wird."""
-    c_ai.clear_folder(r"C:\\Users\\Oskar\\Documents\\Seminar\\GenAI-Seminar-UC1\\uploads")
+    c_ai.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+
+def ask_gpt(messages):
+    """Sendet die Unterhaltung an GPT und erhält eine Antwort."""
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            max_tokens=4096,
+            n=1,
+            temperature=0.05,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Fehler bei der Kommunikation mit GPT: {str(e)}"
 
 def image_to_base64(img_path):
     """Konvertiert ein Bild in Base64."""
@@ -100,6 +60,7 @@ def main():
     UPLOAD_FOLDER = 'uploads'
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
+
 
     # Logo in der oberen linken Ecke hinzufügen
     logo_path = "logo.png"  # Pfad zum Logo
