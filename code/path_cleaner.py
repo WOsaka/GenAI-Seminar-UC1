@@ -119,8 +119,8 @@ def remove_noise(input_file, output_file, min_length=1.0, max_distance=10.0):
     print(f"Cleaned DXF saved to: {output_file}")
 
 # Example usage
-input_file = r"GenAI-Seminar-UC1\uploads\output.dxf"
-output_file = r"GenAI-Seminar-UC1\uploads\output_cleaned.dxf"
+# input_file = r"GenAI-Seminar-UC1\uploads\output.dxf"
+# output_file = r"GenAI-Seminar-UC1\uploads\output_cleaned.dxf"
 
-remove_noise(input_file, output_file, min_length=200, max_distance=0.001)
+# remove_noise(input_file, output_file, min_length=200, max_distance=0.001)
 #converter_cv.dxf_to_png(r'uploads\output_cleaned.dxf', r'uploads\output_cleaned.png')

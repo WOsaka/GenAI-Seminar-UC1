@@ -58,6 +58,8 @@ def extract_metadata(image_path):
             Analyse the doors and give the measurement of them. Every door has 2 values, the smaller one is the width and the larger one is the height.
             Where is the entrance? Is it a door or an elevator or stairs? 
             Analyse the walls and their measurements, consider a wall with the size of 11.5 as not load-bearing. Give information which walls are load-bearing.
+
+            Give your answer in german.
     """}, 
     {
         "role": "user", "content": [
@@ -91,7 +93,9 @@ def control_metadata(image_path, gpt_analysis):
                 
             As control instance you are supposed to control if the analysis is correct and all measurements are extracted correct. 
             Recheck every measurement on the side and compare the different rooms to check if the matching of outside measurements and rooms is reasonable 
-            Give feedback and explain which inaccuracys you found. 
+            Give feedback and explain which inaccuracys you found.
+
+             
     """}, 
     {
         "role": "user", "content": [
@@ -107,14 +111,14 @@ def control_metadata(image_path, gpt_analysis):
 
 
 
-guideline_file = open("Guidelines/DIN 18040.txt", "r") 
-guidelines = guideline_file.read()
-cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
-cost_information = cost_information_file.read()
-response = extract_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg")
-print(f"GPT-40 response: {response}")
-evaluation = control_guidelines.control_guidelines("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response, guidelines, cost_information)
-print(f"Guideline Evaluation: {evaluation}")
+# guideline_file = open("Guidelines/DIN 18040.txt", "r") 
+# guidelines = guideline_file.read()
+# cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
+# cost_information = cost_information_file.read()
+# response = extract_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg")
+# print(f"GPT-40 response: {response}")
+# evaluation = control_guidelines.control_guidelines("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response)
+# print(f"Guideline Evaluation: {evaluation}")
 #control = control_metadata("Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg", response)
 
 # response = extract_metadata("pipeline/2.1_text_added.png")

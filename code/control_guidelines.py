@@ -34,11 +34,15 @@ def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
-def control_guidelines(image_path, metadata, guidelines, cost_information):
+def control_guidelines(image_path, metadata):
     base64_image = encode_image(image_path)
     c_cv.call_vision(image_path, "metadata_ocr")
     c_cv.draw_polygons_around_words(image_path, "metadata_ocr.json","metadata_text_highlighted.png", 0.5)
-   
+    guideline_file = open("Guidelines/DIN 18040.txt", "r") 
+    guidelines = guideline_file.read()
+    cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
+    cost_information = cost_information_file.read()
+
     messages = [{
         "role": "system", "content": """
             You are specialised in the analysis of age-appropiate living. You are presented a floor plan and an analysis with information about rooms, doors and measurements.
