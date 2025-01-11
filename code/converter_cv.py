@@ -469,5 +469,6 @@ def main(image_path):
 # Example usage
 if __name__ == "__main__":
     main(r"Neue Grundrisse\image.png")
+    # main(r"Neue Grundrisse\RIng\Ausführungsplan.png")
     # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
     # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\data")

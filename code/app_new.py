@@ -16,7 +16,8 @@ def create_zip_file(zip_filename, files_to_zip):
 
 # Funktion, die beim Schließen der App ausgeführt wird
 def on_close():
-    c_ai.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+    c_cv.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+    c_cv.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\data")
 
 
 def main():

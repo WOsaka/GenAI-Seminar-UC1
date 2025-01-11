@@ -4,18 +4,21 @@ from openai import AzureOpenAI
 from dotenv import load_dotenv
 import json
 import re
-import converter_ai as converter_ai 
+import converter_ai as converter_ai
+
 load_dotenv()
- 
+
 client: AzureOpenAI = AzureOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
     azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT"),
 )
 
+
 def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
 
 def query_gpt40(
     messages: list[dict[str, str]],
@@ -23,7 +26,7 @@ def query_gpt40(
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
-        max_tokens= 4096,
+        max_tokens=4096,
         n=1,
         temperature=0.05,
     )
@@ -31,10 +34,11 @@ def query_gpt40(
         return response.choices[0].message.content.strip()
     return ""
 
+
 def extract_rooms(data_string):
     try:
         # Replace tuple-like (x, y) with JSON-compatible [x, y]
-        data_string = re.sub(r'\(([^)]+)\)', r'[\1]', data_string)
+        data_string = re.sub(r"\(([^)]+)\)", r"[\1]", data_string)
 
         # Parse the modified string as JSON
         data = json.loads(data_string)
@@ -47,11 +51,14 @@ def extract_rooms(data_string):
     except json.JSONDecodeError as e:
         raise ValueError(f"JSON parsing error: {e}")
 
+
 def chat_with_gpt(image_path):
     base64_image = encode_image(image_path)
 
-    messages=[
-            {"role": "system", "content": """You are an AI assistant specialized in analyzing building floor plans and converting them into structured dictionary. Your task is to:
+    messages = [
+        {
+            "role": "system",
+            "content": """You are an AI assistant specialized in analyzing building floor plans and converting them into structured dictionary. Your task is to:
 
     1. Identify each distinct room or area in the floor plan image.
     2. Assign a name to each room based on its apparent function or any visible labels.
@@ -74,18 +81,26 @@ def chat_with_gpt(image_path):
     Each room should be represented by four coordinate pairs, starting from the top-left corner and moving clockwise.
     If a room has more than four corners, approximate it with four main corners.
     If you're unsure about a room name, use a descriptive term (e.g., "UnknownRoom1").
-    Provide only the JSON output, no additional explanations."""
-            },
-            {
-                "role": "user", "content": [
-                {"type": "text", "text": "Analyze this floor plan image and provide the JSON representation of rooms and their coordinates as specified."},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                ]
-            }
+    Provide only the JSON output, no additional explanations.""",
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Analyze this floor plan image and provide the JSON representation of rooms and their coordinates as specified.",
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                },
+            ],
+        },
     ]
 
     final_response = query_gpt40(messages)
     return final_response
+
 
 '''
 if __name__ == "__main__":
