@@ -110,6 +110,33 @@ def remove_text_from_image(image_path, json_file_path, output_path, confidence_t
     cv.imwrite(r'pipeline\2_text_removed.png', inpainted_image)
     cv.imwrite(output_path, inpainted_image)
 
+def put_text_on_image(image_path, json_file_path, output_path, confidence_threshold):
+    # Load the image
+    image = cv.imread(image_path)
+    assert image is not None, "File could not be read, check with os.path.exists()"
+
+    # Load JSON data from a file
+    with open(json_file_path, 'r', encoding='utf-8') as json_file:
+        text_data = json.load(json_file)
+
+    # Iterate through each block, line, and word to put text on image
+    for block in text_data['blocks']:
+        for line in block['lines']:
+            for word in line['words']:
+                if word['confidence'] >= confidence_threshold:
+                    # Calculate the bounding box for the line
+                    bounding_polygon = line['boundingPolygon']
+
+                    # Calculate the top-left corner of the bounding box to place the text
+                    top_left_x = min(pt['x'] for pt in bounding_polygon)
+                    top_left_y = max(pt['y'] for pt in bounding_polygon)
+
+                    # Put the text on the image
+                    cv.putText(image, line['text'], (top_left_x, top_left_y), cv.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 0), 2, cv.LINE_AA, False)
+
+    # Save the image with text
+    cv.imwrite(output_path, image)
+
 def find_contours(image_path):
   # Load the image
   img = cv.imread(image_path)
@@ -169,14 +196,16 @@ def dxf_to_png(dxf_path, png_path):
   plt.close(fig)
 
 def main(image_path):
-    confidence_threshold = 0.65
+    confidence_threshold = 0.1
     call_vision(image_path, r'uploads\result_vision') 
     draw_polygons_around_words(image_path, r'uploads\result_vision.json', r'pipeline\1_text_highlighted.png', confidence_threshold) 
     remove_text_from_image(image_path, r'uploads\result_vision.json', r'uploads\output.png', confidence_threshold) 
+    put_text_on_image(r"pipeline\2_text_removed.png", r"uploads\result_vision.json", r"pipeline/2.1_text_added.png", confidence_threshold)
     contours, image_height = find_contours(r'uploads\output.png')
     contours_to_dxf(contours, r'uploads\output.dxf', image_height)
     dxf_to_png(r'uploads\output.dxf', r'uploads\output.png')
+    
 
 # Example usage
 if __name__ == "__main__":
-    main(r'Grundriss Beispiele\Beispiel_Niklas.jpg')
+    main(r'Neue Grundrisse/D-Str/D-Str_Obergeschoss.jpg')
