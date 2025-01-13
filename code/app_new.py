@@ -7,6 +7,7 @@ from openai import AzureOpenAI
 from dotenv import load_dotenv
 import converter_ai as c_ai
 import converter_cv as c_cv
+import converter_cvdw as c_dw
 import atexit
 import zipfile
 import generate_metadata
@@ -112,7 +113,9 @@ def main():
             img = Image.open(filename)
             st.image(img, caption='Hochgeladenes Bild', use_column_width=True)
 
-            c_cv.main(filename)
+            # c_cv.main(filename)
+            c_dw.main(filename)
+
 
             files_to_zip = [r'uploads\output.png', r'uploads\output.dxf']
             zip_filename = r'uploads\output.zip'
