@@ -129,7 +129,7 @@ def main():
                     mime="application/zip"
                 )
             if st.button("Bild verbessern"):
-                path_cleaner.remove_noise(r"uploads\output.dxf", r"uploads\output_cleaned.dxf", min_length= 200, max_distance=0.001)
+                path_cleaner.remove_noise(r"uploads\output.dxf", r"uploads\output_cleaned.dxf", min_length= 250, max_distance=0.001)
                 c_cv.dxf_to_png(r'uploads\output_cleaned.dxf', r'uploads\output_cleaned.png')
                 cleaned_image = Image.open(r"uploads\output_cleaned.png")
                 st.image(cleaned_image, caption="Verbessertes Bild", use_column_width=False)

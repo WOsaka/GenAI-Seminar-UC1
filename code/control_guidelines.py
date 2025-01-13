@@ -42,6 +42,8 @@ def control_guidelines(image_path, metadata):
     guidelines = guideline_file.read()
     cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
     cost_information = cost_information_file.read()
+    subsidy_information_file = open("Guidelines/Fördermöglichkeiten.txt", "r")
+    subsidy_information = subsidy_information_file.read()
 
     messages = [{
         "role": "system", "content": """
@@ -53,6 +55,7 @@ def control_guidelines(image_path, metadata):
              
             After that give recommendations based on the possible services mentioned in the cost information and calculate an estimated price of them.
             
+            You are given information about possible subsidies, try and provide information about them in the recommendation.
             Please give your output in german.
     """}, 
     {
@@ -61,7 +64,8 @@ def control_guidelines(image_path, metadata):
                 {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
                 {"type": "text", "text": "This is the provided information" +  metadata },
                 {"type": "text", "text": "This is the provided guideline" + guidelines},
-                 {"type": "text", "text": "This is the provided cost information" + cost_information}
+                {"type": "text", "text": "This is the provided cost information" + cost_information},
+                {"type": "text", "text": "This is the provided subsidy information" + subsidy_information}
                 ]
     }
     ]
