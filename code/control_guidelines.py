@@ -6,7 +6,7 @@ import json
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential
-import converter_cv as c_cv
+import converter_cvdw as c_cv
 
 load_dotenv()
 

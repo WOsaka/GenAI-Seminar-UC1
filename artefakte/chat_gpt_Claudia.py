@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
  
 client: AzureOpenAI = AzureOpenAI(
-    api_key=os.environ.get("5ndjVayyOA1ZVJ2ShjkY3Zl1RcJPeLfxsammQIqPs2uUl0PczN7XJQQJ99AKACfhMk5XJ3w3AAABACOGHq1N"),
+    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
     api_version=os.environ.get("2024-02-15-preview"),
     azure_endpoint=os.environ.get("OPENAI_AZURE_ENDPOINT"),
 )
