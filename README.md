@@ -1,18 +1,14 @@
 # AI-based Construction Plan Analysis
 
-## Description
-Brief description of what this project does and who it's for.
-
 ## Installation
-Steps to get the project up and running.
+Steps to get the project up and running
 
+Create a conda environment + download and install the requirements
 ```bash
-#Example
-pip install foobar
+conda create --name <env> --file requirements.txt
 ```
 
-## Usage and examples
-Provide descriptions and examples of usage for this project
-
-## Acknowledgements
-Individuals or projects that have contributed to the development of this project
+Install the remaining requirements via pip
+```bash
+pip install <requirements>
+```
