@@ -33,7 +33,9 @@ def create_zip_file(zip_filename, files_to_zip):
 
 def on_close():
     """Funktion, die beim Schließen der App ausgeführt wird."""
-    c_ai.clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
+    c_cv.clear_folder(r"uploads")
+    c_cv.clear_folder(r"data")
+
 
 def ask_gpt(messages):
     """Sendet die Unterhaltung an GPT und erhält eine Antwort."""
@@ -150,23 +152,9 @@ def main():
 
     with tab3:
         st.header("Chatbot")
-        if st.button("Guidelines verarbeiten"):
-            st.session_state["messages"] = [{"role": "system", "content": "Du bist ein hilfreicher Assistent."}]
-            metadata = generate_metadata.extract_metadata(filename)
-            guideline_input = control_guidelines.control_guidelines(filename, metadata)
-            st.session_state["messages"].append({"role": "assistant", "content": metadata})
-            guideline_file = open("Guidelines/DIN 18040.txt", "r") 
-            guidelines = guideline_file.read()
-            cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
-            cost_information = cost_information_file.read()
-            st.session_state["messages"].append({"role": "system", "content": "Hier sind einige Informationen über die Wohnung" + metadata})
-            st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Guidelines" + guidelines})
-            st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu kosten. Versuche dich hauptsächlich darauf zu beziehen." + cost_information})
-            st.session_state["messages"].append({"role": "assistant", "content": guideline_input})
-
-            
+          
         if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "system", "content": "Du bist ein hilfreicher Assistent."}]
+            st.session_state["messages"] = [{"role": "system", "content": "Du bist ein hilfreicher Assistent. Bitte fasse dich in deinen Antworten kurz und verwende wenige Sätze."}]
         for message in st.session_state["messages"]:
             if message["role"] == "user":
                 st.markdown(
@@ -175,6 +163,24 @@ def main():
                 )
             elif message["role"] == "assistant":
                 st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
+
+        
+        guideline_file = open("Guidelines/DIN 18040.txt", "r") 
+        guidelines = guideline_file.read()
+        cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
+        cost_information = cost_information_file.read()
+        st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Guidelines" + guidelines})
+        st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Kosten. Versuche dich hauptsächlich darauf zu beziehen." + cost_information})
+       
+        if st.button("Guidelines verarbeiten"):
+            metadata = generate_metadata.extract_metadata(filename)
+            guideline_input = control_guidelines.control_guidelines(filename, metadata)
+            st.session_state["messages"].append({"role": "assistant", "content": metadata})
+            st.session_state["messages"].append({"role": "system", "content": "Hier sind einige Informationen über die Wohnung" + metadata})
+            st.session_state["messages"].append({"role": "system", "content": "Hier sind einige Informationen wie gut die Wohnung für altersgerechtes Wohnen geeignet ist. " + guideline_input})
+            st.session_state["messages"].append({"role": "assistant", "content": guideline_input})
+
+
 
         def handle_input():
             user_input = st.session_state["user_input"]

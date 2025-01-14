@@ -11,9 +11,9 @@ import converter_cvdw as c_cv
 load_dotenv()
 
 client: AzureOpenAI = AzureOpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
+    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
-    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT")
+    azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT")
 )
 
 def query_gpt40(
