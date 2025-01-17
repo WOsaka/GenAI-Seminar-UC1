@@ -11,9 +11,9 @@ import converter_cvdw as c_cv
 load_dotenv()
 
 client: AzureOpenAI = AzureOpenAI(
-    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
+    api_key=os.environ.get("OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
-    azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT")
+    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT")
 )
 
 def query_gpt40(
@@ -49,6 +49,7 @@ def control_guidelines(image_path, metadata):
         "role": "system", "content": """
             You are specialised in the analysis of age-appropiate living. You are presented a floor plan and an analysis with information about rooms, doors and measurements.
             Your task is to evaluate the apartment based on the given guidelines and point out good and bad things that might impact age-appropiate living. 
+            Pay special attention to the accesibility of the entrance.
             Give recomendations of small changes, that will improve the apartment in the given aspects.
             You have the opportunity to move the non load-bearing walls if that makes rooms like the bathroom larger and more accesible.
             Give an evaluation on the meaningfullness of that approach.

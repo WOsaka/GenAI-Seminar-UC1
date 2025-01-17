@@ -22,7 +22,7 @@ load_dotenv()
 client: AzureOpenAI = AzureOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
-    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT"),
+    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT")
 )
 
 def create_zip_file(zip_filename, files_to_zip):
@@ -155,6 +155,16 @@ def main():
           
         if "messages" not in st.session_state:
             st.session_state["messages"] = [{"role": "system", "content": "Du bist ein hilfreicher Assistent. Bitte fasse dich in deinen Antworten kurz und verwende wenige Sätze."}]
+            guideline_file = open("Guidelines/DIN 18040.txt", "r") 
+            guidelines = guideline_file.read()
+            cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
+            cost_information = cost_information_file.read()
+            subsidy_file = open("Guidelines/Fördermöglichkeiten.txt", "r")
+            subsidy_information = subsidy_file.read()
+            st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Guidelines" + guidelines})
+            st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Kosten. Versuche dich hauptsächlich darauf zu beziehen." + cost_information})
+            st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Fördermöglichkeiten" + subsidy_information})  
+        
         for message in st.session_state["messages"]:
             if message["role"] == "user":
                 st.markdown(
@@ -164,23 +174,17 @@ def main():
             elif message["role"] == "assistant":
                 st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
 
-        
-        guideline_file = open("Guidelines/DIN 18040.txt", "r") 
-        guidelines = guideline_file.read()
-        cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
-        cost_information = cost_information_file.read()
-        st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Guidelines" + guidelines})
-        st.session_state["messages"].append({"role": "system", "content": "Hier sind die relevanten Informationen zu Kosten. Versuche dich hauptsächlich darauf zu beziehen." + cost_information})
-       
         if st.button("Guidelines verarbeiten"):
             metadata = generate_metadata.extract_metadata(filename)
             guideline_input = control_guidelines.control_guidelines(filename, metadata)
-            st.session_state["messages"].append({"role": "assistant", "content": metadata})
+            base64_image = control_guidelines.encode_image(filename)
+            #Do not show the metadata in the Chat
+            #st.session_state["messages"].append({"role": "assistant", "content": metadata})
             st.session_state["messages"].append({"role": "system", "content": "Hier sind einige Informationen über die Wohnung" + metadata})
             st.session_state["messages"].append({"role": "system", "content": "Hier sind einige Informationen wie gut die Wohnung für altersgerechtes Wohnen geeignet ist. " + guideline_input})
+            st.session_state["messages"].append({"role": "system", "content": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}})
             st.session_state["messages"].append({"role": "assistant", "content": guideline_input})
-
-
+            
 
         def handle_input():
             user_input = st.session_state["user_input"]

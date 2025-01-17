@@ -11,9 +11,9 @@ import control_guidelines
 load_dotenv()
 
 client: AzureOpenAI = AzureOpenAI(
-    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
+    api_key=os.environ.get("OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
-    azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT")
+    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT")
 )
 
 def query_gpt40(
@@ -56,8 +56,10 @@ def extract_metadata(image_path):
             The bathroom has a measurement of 2.705m x 2.175m.
             Analyse the hallways and give an exact measurement of their width.
             Analyse the doors and give the measurement of them. Every door has 2 values, the smaller one is the width and the larger one is the height.
-            Where is the entrance? Is it a door or an elevator or stairs? 
+            Where is the entrance? The entrance is often next to the stairwell. "WF" is often used for "Windfang" A number in front of the letters "ST" represents the number of stairs. 
+            The Entrance is m Is it a door or an elevator or stairs? Where is the staircase, how many stairs are there? 
             Analyse the walls and their measurements, consider a wall with the size of 11.5 as not load-bearing. Give information which walls are load-bearing.
+            
 
             Give your answer in german.
     """}, 
