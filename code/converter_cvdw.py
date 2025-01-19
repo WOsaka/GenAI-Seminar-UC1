@@ -188,7 +188,7 @@ def find_contours(image_path):
     image_height, _ = img.shape[:2]
 
     # Convert to binary
-    _, binary = cv.threshold(img, 127, 255, cv.THRESH_BINARY_INV)
+    _, binary = cv.threshold(img, 90, 255, cv.THRESH_BINARY_INV)
     cv.imwrite(r"pipeline\3_image_binary.png", binary)
 
     # Apply Canny edge detection
