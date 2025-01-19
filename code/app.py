@@ -61,6 +61,11 @@ def image_to_base64(img_path):
         return base64.b64encode(img_file.read()).decode("utf-8")
 
 
+@st.cache_resource
+def call_c_cv(filename):
+    c_cv.main(filename)
+
+
 def main():
     # Registriere die Funktion zum Ausführen bei App-Schließung
     atexit.register(on_close)
@@ -126,27 +131,31 @@ def main():
                 img, caption="Hochgeladenes Bild", use_container_width=False, width=700
             )
 
-            c_cv.main(filename)
+            if st.button("Bild verarbeiten"):
+                call_c_cv(filename)
 
-            files_to_zip = [r"uploads\output.png", r"uploads\output.dxf"]
-            zip_filename = r"uploads\output.zip"
-            create_zip_file(zip_filename, files_to_zip)
+                files_to_zip = [r"uploads\output.png", r"uploads\output.dxf"]
+                zip_filename = r"uploads\output.zip"
+                create_zip_file(zip_filename, files_to_zip)
 
-            converted_img = Image.open(r"uploads\output.png")
-            st.image(
-                converted_img,
-                caption="Verarbeitetes Bild",
-                use_container_width=False,
-                width=700,
-            )
-
-            with open(r"uploads\output.zip", "rb") as file:
-                st.download_button(
-                    label="Verarbeitetes Bild herunterladen",
-                    data=file,
-                    file_name="processed_file.zip",
-                    mime="application/zip",
+            try:
+                converted_img = Image.open(r"uploads\output.png")
+                st.image(
+                    converted_img,
+                    caption="Verarbeitetes Bild",
+                    use_container_width=False,
+                    width=700,
                 )
+
+                with open(r"uploads\output.zip", "rb") as file:
+                    st.download_button(
+                        label="Verarbeitetes Bild herunterladen",
+                        data=file,
+                        file_name="processed_file.zip",
+                        mime="application/zip",
+                    )
+            except:
+                pass
 
             if st.button("Bild verbessern"):
                 path_cleaner.remove_noise(
@@ -184,6 +193,12 @@ def main():
     with tab3:
         st.header("Chatbot")
 
+        client: AzureOpenAI = AzureOpenAI(
+            api_key=os.environ.get("OPENAI_API_KEY"),
+            api_version=os.environ.get("OPENAI_API_VERSION"),
+            azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT"),
+        )
+
         if "messages" not in st.session_state:
             st.session_state["messages"] = [
                 {
@@ -191,12 +206,12 @@ def main():
                     "content": "Du bist ein hilfreicher Assistent. Bitte fasse dich in deinen Antworten kurz und verwende wenige Sätze.",
                 }
             ]
-            guideline_file = open("Guidelines/DIN 18040.txt", "r")
-            guidelines = guideline_file.read()
-            cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
-            cost_information = cost_information_file.read()
-            subsidy_file = open("Guidelines/Fördermöglichkeiten.txt", "r")
-            subsidy_information = subsidy_file.read()
+            with open("Guidelines/DIN 18040.txt", "r") as guideline_file:
+                guidelines = guideline_file.read()
+            with open("Guidelines/Kostenaufstellung.txt", "r") as cost_information_file:
+                cost_information = cost_information_file.read()
+            with open("Guidelines/Fördermöglichkeiten.txt", "r") as subsidy_file:
+                subsidy_information = subsidy_file.read()
             st.session_state["messages"].append(
                 {
                     "role": "system",
@@ -219,14 +234,19 @@ def main():
                 }
             )
 
-        for message in st.session_state["messages"]:
-            if message["role"] == "user":
-                st.markdown(
-                    f"<div style='text-align: right;'><strong><em>Du:</em></strong> <em>{message['content']}</em></div>",
-                    unsafe_allow_html=True,
-                )
-            elif message["role"] == "assistant":
-                st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
+        for message in st.session_state["messages"]:    
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+
+        # for message in st.session_state["messages"]:
+        #     if message["role"] == "user":
+        #         st.markdown(
+        #             f"<div style='text-align: right;'><strong><em>Du:</em></strong> <em>{message['content']}</em></div>",
+        #             unsafe_allow_html=True,
+        #         )
+        #     elif message["role"] == "assistant":
+        #         st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
 
         if st.button("Guidelines verarbeiten"):
             metadata = generate_metadata.extract_metadata(filename)
@@ -256,13 +276,34 @@ def main():
                     "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
                 }
             )
-
-            # doppelt??
-            # st.session_state["messages"].append({"role": "assistant", "content": guideline_input})
+            st.session_state["messages"].append(
+                {"role": "assistant", "content": guideline_input}
+            )
 
             # new
-            response = ask_gpt(st.session_state["messages"])
-            st.write(response)
+            st.write(guideline_input)
+
+        if prompt := st.chat_input("Stellen Sie eine Frage:"):
+            st.session_state["messages"].append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            with st.chat_message("assistant"):
+                stream = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": m["role"], "content": m["content"]}
+                        for m in st.session_state["messages"]
+                    ],
+                    stream=True,
+                    max_tokens=4096,
+                    n=1,
+                    temperature=0.05,
+                )
+                response = st.write_stream(stream)
+            st.session_state["messages"].append(
+                {"role": "assistant", "content": response}
+            )
 
         def handle_input():
             user_input = st.session_state["user_input"]
@@ -276,9 +317,9 @@ def main():
                 )
                 st.session_state["user_input"] = ""
 
-        st.text_input(
-            "Stellen Sie eine Frage:", key="user_input", on_change=handle_input
-        )
+        # st.text_input(
+        #     "Stellen Sie eine Frage:", key="user_input", on_change=handle_input
+        # )
 
         if st.button("Konversation löschen"):
             st.session_state["messages"] = [
