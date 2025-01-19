@@ -17,7 +17,7 @@ def main(text: str):
         azure_oai_deployment = "gpt-4o"
         azure_search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
         azure_search_key = os.getenv("AZURE_SEARCH_KEY")
-        azure_search_index = "guidelines"
+        azure_search_index = 'guidelines' # os.getenv("AZURE_SEARCH_INDEX")
 
         # Initialize the Azure OpenAI client
         client = AzureOpenAI(

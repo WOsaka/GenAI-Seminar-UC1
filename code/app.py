@@ -328,7 +328,7 @@ def main():
 
     with tab4:
         st.title("Chatbot")
-        user_input = st.text_input("Enter a question:")
+        user_input = st.text_input("Stelle eine Frage zu Normen, Fördermöglichkeiten oder Kosten beim barrierefreien Bauen:")
         if user_input:
             response = rag.main(user_input)
             st.write(response)
