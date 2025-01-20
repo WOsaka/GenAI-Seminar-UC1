@@ -464,6 +464,7 @@ def main(image_path):
     contours, image_height = find_contours(r"uploads\output.png")
     contours_to_dxf(contours, r"uploads\output.dxf", image_height)
     dxf_to_png(r"uploads\output.dxf", r"uploads\output.png")
+    print("converter_cvdw")
 
 
 # Example usage

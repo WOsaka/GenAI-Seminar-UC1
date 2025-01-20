@@ -6,43 +6,43 @@ from dotenv import load_dotenv
 
 from openai import AzureOpenAI
 
+# Get configuration settings
+load_dotenv()
+azure_oai_endpoint = os.getenv("OPENAI_API_ENDPOINT")
+azure_oai_key = os.getenv("OPENAI_API_KEY")
+azure_oai_deployment = "gpt-4o"
+azure_search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
+azure_search_key = os.getenv("AZURE_SEARCH_KEY")
+azure_search_index = 'guidelines' # os.getenv("AZURE_SEARCH_INDEX")
+
+# Initialize the Azure OpenAI client
+client = AzureOpenAI(
+    base_url=f"{azure_oai_endpoint}/openai/deployments/{azure_oai_deployment}/extensions",
+    api_key=azure_oai_key,
+    api_version="2023-09-01-preview",
+)
+
+# Configure your data source
+extension_config = dict(
+    dataSources=[
+        {
+            "type": "AzureCognitiveSearch",
+            "parameters": {
+                "endpoint": azure_search_endpoint,
+                "key": azure_search_key,
+                "indexName": azure_search_index,
+            },
+        }
+    ]
+)
 
 def main(text: str):
 
     try:
-        # Get configuration settings
-        load_dotenv()
-        azure_oai_endpoint = os.getenv("OPENAI_API_ENDPOINT")
-        azure_oai_key = os.getenv("OPENAI_API_KEY")
-        azure_oai_deployment = "gpt-4o"
-        azure_search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
-        azure_search_key = os.getenv("AZURE_SEARCH_KEY")
-        azure_search_index = 'guidelines' # os.getenv("AZURE_SEARCH_INDEX")
-
-        # Initialize the Azure OpenAI client
-        client = AzureOpenAI(
-            base_url=f"{azure_oai_endpoint}/openai/deployments/{azure_oai_deployment}/extensions",
-            api_key=azure_oai_key,
-            api_version="2023-09-01-preview",
-        )
-
-        # Configure your data source
-        extension_config = dict(
-            dataSources=[
-                {
-                    "type": "AzureCognitiveSearch",
-                    "parameters": {
-                        "endpoint": azure_search_endpoint,
-                        "key": azure_search_key,
-                        "indexName": azure_search_index,
-                    },
-                }
-            ]
-        )
 
         response = client.chat.completions.create(
             model=azure_oai_deployment,
-            temperature=0.5,
+            temperature=0.05,
             n=1,
             max_tokens=4096,
             messages=[
@@ -126,6 +126,7 @@ def main(text: str):
             extra_body=extension_config,
         )
 
+        print("rag")
         return response.choices[0].message.content
 
     except Exception as ex:
@@ -134,4 +135,8 @@ def main(text: str):
 
 if __name__ == "__main__":
     # main("Wie kann der Zugang zu einer Wohnung verbessert werden?")
-    print(main("Welche Fördermöglichkeiten gibt es für barrierefreies Bauen in Deutschland?"))
+    # print(main("Welche Fördermöglichkeiten gibt es für barrierefreies Bauen in Deutschland?"))
+
+    # print(main("Gib eine ausfühliche Zusammenfassung der Anforderungen an das barrierefreihe Bauen, gehe dabei speziell auf die vorgeschriebenen Maße ein und bilde die jede Kategorie mit den wichtigsten Kriterien ab."))
+    print(main("Gib eine ausfühliche Zusammenfassung der Fördermaßnahmen für altersgerechte oder barrierefreie Umbaumaßnahmen von Wohnbebäuden, gehe dabei auf jede genannt Kategorie ein und beschreibe die wichtigsten Punkte."))
+    # print(main("Gib eine ausfühliche Zusammenfassung der Durchschnittskosten, beziehungsweise der Preise, die bei möglichen barrierefreien Umbaumaßnahmen anfallen können. Gehe dabei auf die jede genannte Kategorien ein und beschreibe die wichtigsten Punkte."))

@@ -72,6 +72,7 @@ def extract_metadata(image_path):
     ]
 
     final_response = query_gpt40(messages)
+    print("generated metadata: ")
     return final_response
 
 

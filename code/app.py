@@ -161,7 +161,7 @@ def main():
                 path_cleaner.remove_noise(
                     r"uploads\output.dxf",
                     r"uploads\output_cleaned.dxf",
-                    min_length=250,
+                    min_length=100,
                     max_distance=0.001,
                 )
                 c_cv.dxf_to_png(
