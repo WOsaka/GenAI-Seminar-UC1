@@ -437,7 +437,7 @@ def delete_replace_door_window(image_path, confidence):
                             )
 
     # Save the modified image
-    output_paths = [r"data/output.png", r"uploads/output.png"]
+    output_paths = [r"data\output.png", r"uploads\output.png"]
     for output_path in output_paths:
         image.save(output_path)
 

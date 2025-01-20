@@ -183,6 +183,7 @@ def main():
 
 
         def handle_input():
+
             user_input = st.session_state["user_input"]
             if user_input:
                 st.session_state["messages"].append({"role": "user", "content": user_input})
@@ -190,6 +191,7 @@ def main():
                 st.session_state["messages"].append({"role": "assistant", "content": response})
                 st.session_state["user_input"] = ""
 
+# Eingabefeld für den Benutzer
         st.text_input(
             "Stellen Sie eine Frage:",
             key="user_input",
