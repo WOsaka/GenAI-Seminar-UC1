@@ -181,7 +181,7 @@ def put_text_on_image(image_path, json_file_path, output_path, confidence_thresh
 
 def find_contours(image_path):
     # Load the image
-    img = cv.imread(image_path)
+    img = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
     assert img is not None, "File could not be read, check with os.path.exists()"
 
     # Get the image dimensions
@@ -192,11 +192,11 @@ def find_contours(image_path):
     cv.imwrite(r"pipeline\3_image_binary.png", binary)
 
     # Apply Canny edge detection
-    edges = cv.Canny(binary, 215, 370)
+    edges = cv.Canny(binary, 100, 200, L2gradient=True)
     cv.imwrite(r"pipeline\4_image_canny.png", edges)
 
     # Find contours
-    contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
 
     cv.drawContours(img, contours, -1, (0, 255, 0), 2)
     cv.imwrite(r"pipeline\5_image_contours.png", img)
@@ -213,7 +213,7 @@ def contours_to_dxf(contours, dxf_path, image_height):
     for contour in contours:
         points = [(point[0][0], image_height - point[0][1]) for point in contour]
         if points:
-            msp.add_lwpolyline(points, close=True)
+            msp.add_lwpolyline(points)
 
     # Save the DXF document
     doc.saveas(dxf_path)
@@ -470,6 +470,6 @@ def main(image_path):
 # Example usage
 if __name__ == "__main__":
     main(r"Neue Grundrisse\D-Str\D-Str_Obergeschoss.png")
-    # main(r"Neue Grundrisse\RIng\Ausführungsplan.png")
+    # main(r"Grundriss Beispiele\Beispiel_David.png")
     # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
     # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\data")

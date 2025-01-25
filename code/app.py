@@ -234,7 +234,7 @@ def main():
                 }
             )
 
-        for message in st.session_state["messages"]:    
+        for message in st.session_state["messages"]:
             if message["role"] != "system":
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
@@ -251,7 +251,6 @@ def main():
         if st.button("Guidelines verarbeiten"):
             metadata = generate_metadata.extract_metadata(filename)
             guideline_input = control_guidelines.control_guidelines(filename, metadata)
-            # control_guidelines. notwendig?
             base64_image = control_guidelines.encode_image(filename)
             # Do not show the metadata in the Chat
             # st.session_state["messages"].append({"role": "assistant", "content": metadata})
@@ -305,17 +304,17 @@ def main():
                 {"role": "assistant", "content": response}
             )
 
-        def handle_input():
-            user_input = st.session_state["user_input"]
-            if user_input:
-                st.session_state["messages"].append(
-                    {"role": "user", "content": user_input}
-                )
-                response = ask_gpt(st.session_state["messages"])
-                st.session_state["messages"].append(
-                    {"role": "assistant", "content": response}
-                )
-                st.session_state["user_input"] = ""
+        # def handle_input():
+        #     user_input = st.session_state["user_input"]
+        #     if user_input:
+        #         st.session_state["messages"].append(
+        #             {"role": "user", "content": user_input}
+        #         )
+        #         response = ask_gpt(st.session_state["messages"])
+        #         st.session_state["messages"].append(
+        #             {"role": "assistant", "content": response}
+        #         )
+        #         st.session_state["user_input"] = ""
 
         # st.text_input(
         #     "Stellen Sie eine Frage:", key="user_input", on_change=handle_input
@@ -328,7 +327,9 @@ def main():
 
     with tab4:
         st.title("Chatbot")
-        user_input = st.text_input("Stelle eine Frage zu Normen, Fördermöglichkeiten oder Kosten beim barrierefreien Bauen:")
+        user_input = st.text_input(
+            "Stelle eine Frage zu Normen, Fördermöglichkeiten oder Kosten beim barrierefreien Bauen:"
+        )
         if user_input:
             response = rag.main(user_input)
             st.write(response)
