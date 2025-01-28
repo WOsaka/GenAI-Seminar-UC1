@@ -4,7 +4,8 @@ from math import sqrt
 
 def calculate_distance(point1, point2):
     """Calculate Euclidean distance between two points."""
-    return sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
+    return sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
 
 def path_length(entity):
     """Calculate the length of a path based on its type."""
@@ -18,7 +19,8 @@ def path_length(entity):
             # Total length of a polyline
             points = get_points(entity)  # Use the helper function
             return sum(
-                calculate_distance(points[i], points[i + 1]) for i in range(len(points) - 1)
+                calculate_distance(points[i], points[i + 1])
+                for i in range(len(points) - 1)
             )
         elif entity.dxftype() == "ARC":
             # Approximate length of an arc
@@ -34,6 +36,7 @@ def path_length(entity):
     except Exception as e:
         print(f"Error processing entity {entity.dxftype()}: {e}")
         return 0  # Default for unsupported or problematic entities
+
 
 def get_points(entity):
     try:
@@ -82,8 +85,12 @@ def remove_noise(input_file, output_file, min_length=1.0, max_distance=10.0):
         for j, (other_entity, _) in enumerate(entities):
             if i == j:
                 continue
-            other_start = other_entity.dxf.start if hasattr(other_entity.dxf, "start") else None
-            other_center = other_entity.dxf.center if hasattr(other_entity.dxf, "center") else None
+            other_start = (
+                other_entity.dxf.start if hasattr(other_entity.dxf, "start") else None
+            )
+            other_center = (
+                other_entity.dxf.center if hasattr(other_entity.dxf, "center") else None
+            )
             other_position = other_start or other_center or (0, 0)
 
             if calculate_distance(position, other_position) <= max_distance:
@@ -109,7 +116,10 @@ def remove_noise(input_file, output_file, min_length=1.0, max_distance=10.0):
                 polyline.append_vertex(vertex.dxf.location)
         elif entity.dxftype() == "ARC":
             msp.add_arc(
-                entity.dxf.center, entity.dxf.radius, entity.dxf.start_angle, entity.dxf.end_angle
+                entity.dxf.center,
+                entity.dxf.radius,
+                entity.dxf.start_angle,
+                entity.dxf.end_angle,
             )
         elif entity.dxftype() == "CIRCLE":
             msp.add_circle(entity.dxf.center, entity.dxf.radius)
@@ -118,9 +128,10 @@ def remove_noise(input_file, output_file, min_length=1.0, max_distance=10.0):
     doc.saveas(output_file)
     print(f"Cleaned DXF saved to: {output_file}")
 
+
 # Example usage
 # input_file = r"GenAI-Seminar-UC1\uploads\output.dxf"
 # output_file = r"GenAI-Seminar-UC1\uploads\output_cleaned.dxf"
 
 # remove_noise(input_file, output_file, min_length=200, max_distance=0.001)
-#converter_cv.dxf_to_png(r'uploads\output_cleaned.dxf', r'uploads\output_cleaned.png')
+# converter_cv.dxf_to_png(r'uploads\output_cleaned.dxf', r'uploads\output_cleaned.png')

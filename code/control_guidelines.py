@@ -14,8 +14,9 @@ load_dotenv()
 client: AzureOpenAI = AzureOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_version=os.environ.get("OPENAI_API_VERSION"),
-    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT")
+    azure_endpoint=os.environ.get("OPENAI_API_ENDPOINT"),
 )
+
 
 def query_gpt40(
     messages: list[dict[str, str]],
@@ -23,7 +24,7 @@ def query_gpt40(
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=messages,
-        max_tokens= 4096,
+        max_tokens=4096,
         n=1,
         temperature=0.05,
     )
@@ -31,26 +32,38 @@ def query_gpt40(
         return response.choices[0].message.content.strip()
     return ""
 
+
 def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
+
 def control_guidelines(image_path, metadata):
     base64_image = encode_image(image_path)
     c_cv.call_vision(image_path, "metadata_ocr")
-    c_cv.draw_polygons_around_words(image_path, "metadata_ocr.json","metadata_text_highlighted.png", 0.5)
-    # guideline_file = open("Guidelines/DIN 18040.txt", "r") 
+    c_cv.draw_polygons_around_words(
+        image_path, "metadata_ocr.json", "metadata_text_highlighted.png", 0.5
+    )
+    # guideline_file = open("Guidelines/DIN 18040.txt", "r")
     # guidelines = guideline_file.read()
-    guidelines = rag.main("Gib eine ausfühliche Zusammenfassung der Anforderungen an das barrierefreihe Bauen, gehe dabei speziell auf die vorgeschriebenen Maße ein und bilde jede Kategorie mit den wichtigsten Kriterien ab.")
+    guidelines = rag.main(
+        "Gib eine ausfühliche Zusammenfassung der Anforderungen an das barrierefreihe Bauen, gehe dabei speziell auf die vorgeschriebenen Maße ein und bilde jede Kategorie mit den wichtigsten Kriterien ab."
+    )
     # cost_information_file = open("Guidelines/Kostenaufstellung.txt", "r")
     # cost_information = cost_information_file.read()
-    cost_information = rag.main("Gib eine ausfühliche Zusammenfassung der Durchschnittskosten, beziehungsweise der Preise, die bei möglichen barrierefreien Umbaumaßnahmen anfallen können. Gehe dabei auf jede genannte Kategorien ein und beschreibe die wichtigsten Punkte.")
+    cost_information = rag.main(
+        "Gib eine ausfühliche Zusammenfassung der Durchschnittskosten, beziehungsweise der Preise, die bei möglichen barrierefreien Umbaumaßnahmen anfallen können. Gehe dabei auf jede genannte Kategorien ein und beschreibe die wichtigsten Punkte."
+    )
     # subsidy_information_file = open("Guidelines/Fördermöglichkeiten.txt", "r")
     # subsidy_information = subsidy_information_file.read()
-    subsidy_information = rag.main("Gib eine ausfühliche Zusammenfassung der Fördermaßnahmen für altersgerechte oder barrierefreie Umbaumaßnahmen von Wohnbebäuden, gehe dabei auf jede genannt Kategorie ein und beschreibe die wichtigsten Punkte.")
+    subsidy_information = rag.main(
+        "Gib eine ausfühliche Zusammenfassung der Fördermaßnahmen für altersgerechte oder barrierefreie Umbaumaßnahmen von Wohnbebäuden, gehe dabei auf jede genannt Kategorie ein und beschreibe die wichtigsten Punkte."
+    )
 
-    messages = [{
-        "role": "system", "content": """
+    messages = [
+        {
+            "role": "system",
+            "content": """
             You are specialised in the analysis of age-appropiate living. You are presented a floor plan and an analysis with information about rooms, doors and measurements.
             Your task is to evaluate the apartment based on the given guidelines and point out good and bad things that might impact age-appropiate living. 
             Pay special attention to the accesibility of the entrance.
@@ -62,17 +75,32 @@ def control_guidelines(image_path, metadata):
             
             You are given information about possible subsidies, try and provide information about them in the recommendation.
             Please give your output in german.
-    """}, 
-    {
-        "role": "user", "content": [
-                {"type": "text", "text": "Analyze this floor plan image and provide the information as specified."},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
-                {"type": "text", "text": "This is the provided information" +  metadata },
+    """,
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Analyze this floor plan image and provide the information as specified.",
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                },
+                {"type": "text", "text": "This is the provided information" + metadata},
                 {"type": "text", "text": "This is the provided guideline" + guidelines},
-                {"type": "text", "text": "This is the provided cost information" + cost_information},
-                {"type": "text", "text": "This is the provided subsidy information" + subsidy_information}
-                ]
-    }
+                {
+                    "type": "text",
+                    "text": "This is the provided cost information" + cost_information,
+                },
+                {
+                    "type": "text",
+                    "text": "This is the provided subsidy information"
+                    + subsidy_information,
+                },
+            ],
+        },
     ]
 
     final_response = query_gpt40(messages)

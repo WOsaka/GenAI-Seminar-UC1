@@ -170,7 +170,7 @@ def main():
                 cleaned_image = Image.open(r"uploads\output_cleaned.png")
                 st.image(
                     cleaned_image,
-                    caption="Verbessertes Bild",
+                    caption="Verbessertes Bild herunterladen",
                     use_container_width=False,
                     width=700,
                 )
