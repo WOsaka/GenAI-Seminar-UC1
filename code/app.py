@@ -104,14 +104,37 @@ def main():
 
     # Tabs für die Funktionen
     tab1, tab2, tab3, tab4 = st.tabs(
-        ["Anleitung", "Bildverarbeitung", "Chatbot", "Chatbot-RAG"]
+        ["Anleitung", "Bildverarbeitung", "Berater", "Informationssuche"]
     )
 
     with tab1:
         st.header("Anleitung")
         st.write(
-            "Willkommen bei RePlanIt! Hier können Sie Bilder hochladen, um Baupläne zu erstellen, "
-            "und mit unserem Chatbot altersgerechte Anpassungen planen."
+            """Diese App unterstützt Sie dabei, Bilder in Baupläne umzuwandeln und mithilfe eines intelligenten Chatbots altersgerechte Anpassungen oder andere Planungen zu erstellen. Befolgen Sie diese einfachen Schritte, um die App effizient zu nutzen:
+ 
+1. Bildverarbeitung\n
+•   Navigieren Sie zum "Bildverarbeitung"-Tab. \n
+•   Klicken Sie auf "Wählen Sie ein Bild aus", um ein Bild von Ihrem Computer hochzuladen.\n
+•   Unterstützte Formate: JPG, JPEG, PNG.\n
+•   Das hochgeladene Bild wird auf der Seite angezeigt.\n
+•   Die Verarbeitung wird mit dem Button "Bild verarbeiten" gestartet\n
+
+2. Berater\n
+Stellen Sie dem Chatbot Fragen oder bitten Sie um Unterstützung bei der Planung von Anpassungen:\n
+•   "Welche Normen gelten für barrierefreies Bauen?"\n
+•   "Wie kann ich mein Badezimmer altersgerecht umbauen?"\n
+•   "Was kostet mich die Renovierung meines Bades?"\n
+Der Chatbot nutzt die zuvor extrahierten Daten und liefert Ihnen maßgeschneiderte Antworten.\n
+ 
+3. Informationssuche\n
+Erhalten sie Antworten zu spezifischen Informationen\n
+•   Fördermöglichkeiten für barrierefreies Bauen.\n
+•   Kostenaufstellungen und Schätzungen für Umbauten.\n
+•   Vorschriften und Normen, die für altersgerechtes Wohnen gelten.\n
+Der Chatbot greift auf eine spezielle Wissensdatenbank zurück, um präzise Antworten zu liefern.\n
+ 
+
+Viel Erfolg mit RePlanIt! 😊"""
         )
 
     with tab2:
