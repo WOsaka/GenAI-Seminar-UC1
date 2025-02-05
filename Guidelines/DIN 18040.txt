@@ -1,123 +1,112 @@
-Allgemeine Anforderungen an die Barrierefreiheit: 
+DIN 18040-2: Barrierefreies Bauen – Planungsgrundlage – Teil 2: Wohnungen
+Allgemeine Anforderungen
+    Ziel: Barrierefreiheit bedeutet, dass Wohnungen in der allgemein üblichen Weise ohne
+    besondere Erschwernis und möglichst ohne fremde Hilfe zugänglich und nutzbar sind.
+    Zielgruppen: Die Norm berücksichtigt:
+    o Menschen mit motorischen Einschränkungen, z. B. Rollstuhlfahrer.
+    o Menschen mit Seh- und Hörbehinderungen.
+    o Menschen mit kognitiven Einschränkungen.
+    o Kinder, ältere Menschen sowie Personen mit Kinderwagen oder Gepäck.
+    Schutzziele: Für jede Maßnahme werden Schutzziele formuliert, die barrierefrei
+    umgesetzt oder auf alternative Weise erfüllt werden können.
 
-    Barrierefreie Gestaltung von Wohnungen und deren Infrastruktur soll eine Nutzung durch Menschen mit Behinderungen ohne fremde Hilfe ermöglichen. 
+Infrastruktur und äußere Erschließung
+    1. Gehwege und Verkehrsflächen:
+        Mindestbreite: 150 cm für Begegnungen mit Rollstühlen.
+        Kürzere Wege (bis 6 m Länge) können 120 cm breit sein, sofern Wendeflächen vorhanden sind.
+        Oberfläche: Eben, rutschfest und erschütterungsarm.
+        Maximale Längsneigung: 3 % (bis 6 % mit Zwischenpodesten alle 10 m).
+    2. PKW-Stellplätze:
+        Breite: Mindestens 350 cm.
+        Länge: Mindestens 500 cm.
+        Lage: In der Nähe von barrierefreien Eingängen.
+        In Garagen: Elektrische Tore zum automatischen Öffnen.
+    3. Zugangs- und Eingangsbereiche:
+        Stufen- und schwellenlos erreichbar.
+        Visuell kontrastierend gestaltet (z. B. helle Tür/dunkler Hintergrund).
+        Taktil wahrnehmbare Bodenstrukturen und Orientierungshilfen.
+        Bewegungsflächen vor Türen: Mindestens 150 x 150 cm, ebene Oberfläche.
 
-    Berücksichtigt werden insbesondere Menschen mit motorischen Einschränkungen, Seh- und Hörbehinderungen sowie Personen, die auf Rollstühle oder andere Mobilitätshilfen angewiesen sind. 
+Innere Erschließung
+    1. Flure und Verkehrsflächen:
+        Mindestbreite: 120 cm.
+        Bewegungsfläche von mindestens 150 cm × 150 cm an mindestens einer Stelle, z.B. zum Wenden.
+        Bei langen Fluren alle 15 Meter eine Bewegungsfläche von 150 cm × 150 cm.
+    2. Türen:
+        Wohnungstüren: Mindestens 90 cm lichte Breite und 205 cm lichte Höhe.
+        Keine Schwellen, außer technisch notwendig (maximal 2 cm hoch).
+        Türdrücker: Greifhöhe 85 cm, bogenförmige Griffe bevorzugt.
+        Bewegungsflächen vor Türen: Mindestens 150 x 150 cm.
+        Türen kontrastreich gestaltet und taktil wahrnehmbar.
+    3. Aufzugsanlagen:
+        Mindestmaße der Kabine: 110 cm × 140 cm.
+        Bewegungsfläche vor Aufzugstüren: 150 cm × 150 cm.
+        Zugangstürbreite: Mindestens 90 cm.
+    4. Treppen und Rampen:
+        Treppen:
+            o Gerade Treppenläufe mit Setzstufen.
+            o Handläufe beidseitig, durchgehend und griffsicher, Höhe: 85 bis 90 cm.
+            o Stufenmarkierungen visuell kontrastierend, Breite: 4 bis 5 cm.
+            o Treppen ohne offene Unterschneidungen.
+        Rampen:
+            o Nutzbare Breite: Mindestens 120 cm.
+            o Maximaler Neigungswinkel: 6 %.
+            o Bewegungsflächen am Anfang und Ende: 150 cm × 150 cm.
+            o Seitliche Radabweiser: Höhe 10 cm.
+            o Beidseitige Handläufe: Höhe 85 bis 90 cm.
+    5. Rollstuhlabstellplätze:
+        Abstellplatz: Mindestens 150 x 180 cm.
+        Mit Stromanschluss für Batterieladung.
+        Bewegungsfläche davor: 150 x 180 cm (kann überlappen).
 
-Flure und Verkehrswege: 
+Gestaltungselemente
+    1. Orientierungshilfen:
+        Visuell kontrastierende Gestaltung von wichtigen Elementen wie Türen, Griffen
+        und Markierungen.
+        Taktil erfassbare Hinweise, z. B. an Handläufen oder Türen.
+        Auditiv: Akustische Signale für Gegensprechanlagen und andere
+        Kommunikationsmittel.
+        Zwei-Sinne-Prinzip: Informationen sollten visuell und taktil oder auditiv
+        wahrnehmbar sein.
+        Sicherheitsmarkierungen bei Glastüren in 40-70 cm und 120-160 cm Höhe.
+    2. Bedienelemente:
+        Höhe: 85 cm über Fertigfußboden (maximal bis 105 cm).
+        Kraftaufwand: Maximal 5 N.
+        Bewegungsfläche davor: Mindestens 150 x 150 cm.
+    3. Ausstattungselemente:
+        Müssen taktil und visuell wahrnehmbar sein, z. B. durch Sockel oder Tastleisten.
+        Keine Einschränkungen der Bewegungsflächen durch hervorstehende Elemente.
 
-    Mindestbreite: 120 cm. 
+Räume innerhalb der Wohnungen
+    1. Allgemeines:
+        Bewegungsflächen müssen ausreichend groß sein, um typische Möblierung zu
+        berücksichtigen.
+        Bewegungsflächen dürfen sich überlagern.
+    2. Wohn-, Schlafräume und Küchen:
+        Bewegungsflächen:
+        o Allgemein: Mindestens 120 cm × 120 cm.
+        o Für uneingeschränkte Rollstuhlnutzung: 150 cm × 150 cm.
+        Vor Möbeln: 90 cm, bei Rollstuhlnutzung 150 cm.
+        Empfehlung: Planung von flexiblen Raumstrukturen.
+    3. Sanitärräume:
+        Mindestens ein barrierefrei nutzbarer Sanitärraum pro Wohnung.
+        Bewegungsflächen:
+        o Vor WC, Waschbecken, Dusche: Mindestens 120 cm × 120 cm, bei
+        Rollstuhlnutzung 150 cm × 150 cm.
+        Bodenebene Dusche ohne Schwellen.
+        WC-Stützklappgriffe und eine Rückenstütze erforderlich.
+        Waschbecken unterfahrbar mit einer Tiefe von mindestens 30 cm.
+    4. Küchen:
+        Bewegungsflächen vor Arbeitsbereichen: 120 cm, bei Rollstuhlnutzung 150 cm.
+        Herd, Spüle und Arbeitsplatte sollten übereck angeordnet sein.
+    5. Fenster:
+        Griffhöhe: 85 cm bis 105 cm über dem Boden.
+        Mindestens ein Fenster pro Raum muss in sitzender Position leicht zu öffnen
+        sein.
+        Transparente Brüstungsbereiche ab 60 cm Höhe.
 
-    Bewegungsfläche von mindestens 150 cm × 150 cm an mindestens einer Stelle, z. B. zum Wenden. 
-
-    Bei langen Fluren alle 15 Meter eine Bewegungsfläche von 150 cm × 150 cm. 
-
-Türen: 
-
-    Lichte Durchgangsbreite: 80 cm (Wohnungstüren), 90 cm (allgemeine Türen). 
-
-    Lichte Durchgangshöhe: 205 cm. 
-
-    Keine Schwellen; wenn technisch unvermeidbar, maximal 2 cm. 
-
-    Bewegungsfläche vor Türen: Mindestens 150 cm × 150 cm. 
-
-    Türen kontrastreich gestaltet und taktil wahrnehmbar. 
-
-Fenster: 
-
-    Griffhöhe: 85 cm bis 105 cm über dem Boden. 
-
-    Mindestens ein Fenster pro Raum muss in sitzender Position leicht zu öffnen sein. 
-
-    Transparente Brüstungsbereiche ab 60 cm Höhe. 
-
-Rampen: 
-
-    Nutzbare Breite: Mindestens 120 cm. 
-
-    Maximaler Neigungswinkel: 6 %. 
-
-    Bewegungsflächen am Anfang und Ende: 150 cm × 150 cm. 
-
-    Seitliche Radabweiser: Höhe 10 cm. 
-
-    Beidseitige Handläufe: Höhe 85 bis 90 cm. 
-
-Treppen: 
-
-    Gerade Treppenläufe mit Setzstufen. 
-
-    Handläufe beidseitig, durchgehend und griffsicher, Höhe: 85 bis 90 cm. 
-
-    Stufenmarkierungen visuell kontrastierend, Breite: 4 bis 5 cm. 
-
-    Treppen ohne offene Unterschneidungen. 
-
-Aufzüge: 
-
-    Mindestmaße der Kabine: 110 cm × 140 cm. 
-
-    Bewegungsfläche vor Aufzugstüren: 150 cm × 150 cm. 
-
-    Zugangstürbreite: Mindestens 90 cm. 
-
-PKW-Stellplätze: 
-
-    Breite: 350 cm. 
-
-    Länge: 500 cm. 
-
-    Stellplätze in Garagen mit automatisierten Toren ausgestattet. 
-
-Wohn- und Schlafräume: 
-
-    Bewegungsflächen: 
-
-        Allgemein: Mindestens 120 cm × 120 cm. 
-
-        Für uneingeschränkte Rollstuhlnutzung: 150 cm × 150 cm. 
-
-        Vor Möbeln: 90 cm, bei Rollstuhlnutzung 150 cm. 
-
-    Empfehlung: Planung von flexiblen Raumstrukturen. 
-
-Küchen: 
-
-    Bewegungsflächen vor Arbeitsbereichen: 120 cm, bei Rollstuhlnutzung 150 cm. 
-
-    Herd, Spüle und Arbeitsplatte sollten übereck angeordnet sein. 
-
-Sanitärräume: 
-
-    Mindestens ein barrierefrei nutzbarer Sanitärraum pro Wohnung. 
-
-    Bewegungsflächen: 
-
-        Vor WC, Waschbecken, Dusche: Mindestens 120 cm × 120 cm, bei Rollstuhlnutzung 150 cm × 150 cm. 
-
-    Bodenebene Dusche ohne Schwellen. 
-
-    WC-Stützklappgriffe und eine Rückenstütze erforderlich. 
-
-    Waschbecken unterfahrbar mit einer Tiefe von mindestens 30 cm. 
-
-Orientierung und Sicherheit: 
-
-    Visuell kontrastierende Gestaltung von wichtigen Elementen wie Türen, Griffen und Markierungen. 
-
-    Taktil erfassbare Hinweise, z. B. an Handläufen oder Türen. 
-
-    Zwei-Sinne-Prinzip: Informationen sollten visuell und taktil oder auditiv wahrnehmbar sein. 
-
-    Sicherheitsmarkierungen bei Glastüren in 40-70 cm und 120-160 cm Höhe. 
-
-Besondere Anforderungen: 
-
-    Zusätzliche Bewegungsflächen bei Rollstuhlnutzung. 
-
-    Elektrische Anschlüsse für Rollstühle und Elektromobile. 
-
-    Berücksichtigung individueller Bedürfnisse, z. B. Anpassungsmöglichkeiten für bestimmte Behinderungsarten. 
-
- 
+Besondere Anforderungen:
+    Zusätzliche Bewegungsflächen bei Rollstuhlnutzung.
+    Elektrische Anschlüsse für Rollstühle und Elektromobile.
+    Berücksichtigung individueller Bedürfnisse, z. B. Anpassungsmöglichkeiten für
+    bestimmte Behinderungsarten.

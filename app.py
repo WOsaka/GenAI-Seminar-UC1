@@ -9,9 +9,15 @@ from dotenv import load_dotenv
 import atexit
 import zipfile
 
-sys.path.append(os.path.abspath('code_m'))
+sys.path.append(os.path.abspath("code_m"))
 
-from code_m import converter_cvdw as c_cv, generate_metadata, control_guidelines, path_cleaner, rag 
+from code_m import (
+    converter_cvdw as c_cv,
+    generate_metadata,
+    control_guidelines,
+    path_cleaner,
+    rag,
+)
 
 # Page configuration
 st.set_page_config(page_title="RePlanIt", layout="wide")
@@ -141,11 +147,29 @@ Viel Erfolg mit RePlanIt! 😊"""
         st.header("Bildverarbeitung")
         # Upload image file
         uploaded_file = st.file_uploader(
-            "Wählen Sie ein Bild aus...", type=["jpg", "jpeg", "png"]
+            "Wählen Sie ein Bild aus...",
+            type=["jpg", "jpeg", "png"],
+        )
+        filename = (
+            os.path.join(UPLOAD_FOLDER, uploaded_file.name) if uploaded_file else None
         )
 
+        if st.button("Neues Bild hochladen"):
+            filename = None
+            st.session_state.clear()
+            st.session_state["messages"] = [
+                {"role": "system", "content": "Du bist ein hilfreicher Assistent."}
+            ]
+            st.session_state["image_uploaded"] = False
+            st.session_state["image_processed"] = False
+            st.session_state["image_cleaned"] = False
+            c_cv.clear_folder(UPLOAD_FOLDER)
+            st.cache_resource.clear()
+
         if uploaded_file is not None:
-            filename = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
+            st.session_state["image_uploaded"] = True
+
+        if st.session_state.get("image_uploaded") == True and filename is not None:
             with open(filename, "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
@@ -157,61 +181,79 @@ Viel Erfolg mit RePlanIt! 😊"""
             if st.button("Bild verarbeiten"):
                 call_c_cv(filename)
 
-                files_to_zip = [r"uploads\output.png", r"uploads\output.dxf"]
-                zip_filename = r"uploads\output.zip"
-                create_zip_file(zip_filename, files_to_zip)
-
-            try:
-                converted_img = Image.open(r"uploads\output.png")
-                st.image(
-                    converted_img,
-                    caption="Verarbeitetes Bild",
-                    use_container_width=False,
-                    width=700,
-                )
-
-                with open(r"uploads\output.zip", "rb") as file:
-                    st.download_button(
-                        label="Verarbeitetes Bild herunterladen",
-                        data=file,
-                        file_name="processed_file.zip",
-                        mime="application/zip",
-                    )
-            except:
-                pass
-
-            if st.button("Bild verbessern"):
-                path_cleaner.remove_noise(
-                    r"uploads\output.dxf",
-                    r"uploads\output_cleaned.dxf",
-                    min_length=100,
-                    max_distance=0.001,
-                )
-                c_cv.dxf_to_png(
-                    r"uploads\output_cleaned.dxf", r"uploads\output_cleaned.png"
-                )
-                cleaned_image = Image.open(r"uploads\output_cleaned.png")
-                st.image(
-                    cleaned_image,
-                    caption="Verbessertes Bild herunterladen",
-                    use_container_width=False,
-                    width=700,
-                )
-
                 files_to_zip = [
-                    r"uploads\output_cleaned.png",
-                    r"uploads\output_cleaned.dxf",
+                    os.path.join(UPLOAD_FOLDER, "output.png"),
+                    os.path.join(UPLOAD_FOLDER, "output.dxf"),
                 ]
-                zip_filename = r"uploads\output_cleaned.zip"
+                zip_filename = os.path.join(UPLOAD_FOLDER, "output.zip")
                 create_zip_file(zip_filename, files_to_zip)
+                st.session_state["image_processed"] = True
 
-                with open(r"uploads\output_cleaned.zip", "rb") as file:
-                    st.download_button(
-                        label="Verbessertes Bild herunterladen",
-                        data=file,
-                        file_name="cleaned_file.zip",
-                        mime="application/zip",
+            if st.session_state.get("image_processed") == True:
+                try:
+                    converted_img = Image.open(
+                        os.path.join(UPLOAD_FOLDER, "output.png")
                     )
+                    st.image(
+                        converted_img,
+                        caption="Verarbeitetes Bild",
+                        use_container_width=False,
+                        width=700,
+                    )
+
+                    with open(os.path.join(UPLOAD_FOLDER, "output.zip"), "rb") as file:
+                        st.download_button(
+                            label="Verarbeitetes Bild herunterladen",
+                            data=file,
+                            file_name="processed_file.zip",
+                            mime="application/zip",
+                        )
+                except FileNotFoundError as e:
+                    st.error(f"Fehler: {e}")
+                except Exception as e:
+                    st.error(f"Ein unerwarteter Fehler ist aufgetreten: {e}")
+
+                if st.button("Bild verbessern"):
+                    path_cleaner.remove_noise(
+                        os.path.join(UPLOAD_FOLDER, "output.dxf"),
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.dxf"),
+                        min_length=100,
+                        max_distance=0.001,
+                    )
+                    c_cv.dxf_to_png(
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.dxf"),
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.png"),
+                    )
+
+                    files_to_zip = [
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.png"),
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.dxf"),
+                    ]
+                    zip_filename = os.path.join(UPLOAD_FOLDER, "output_cleaned.zip")
+                    create_zip_file(zip_filename, files_to_zip)
+                    st.session_state["image_cleaned"] = True
+
+                if st.session_state.get("image_cleaned") == True:
+                    cleaned_image = Image.open(
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.png")
+                    )
+
+                    st.image(
+                        cleaned_image,
+                        caption="Verbessertes Bild herunterladen",
+                        use_container_width=False,
+                        width=700,
+                    )
+
+                    with open(
+                        os.path.join(UPLOAD_FOLDER, "output_cleaned.zip"), "rb"
+                    ) as file:
+                        st.download_button(
+                            label="Verbessertes Bild herunterladen",
+                            data=file,
+                            file_name="cleaned_file.zip",
+                            mime="application/zip",
+                        )
 
     with tab3:
         st.header("Chatbot")
@@ -257,58 +299,55 @@ Viel Erfolg mit RePlanIt! 😊"""
                 }
             )
 
+        if filename is not None:
+            if st.button("Guidelines verarbeiten"):
+                # st.session_state["messages"].append({"role": "assistant", "content": "HI"})
+                metadata = generate_metadata.extract_metadata(filename)
+                guideline_input = control_guidelines.control_guidelines(
+                    filename, metadata
+                )
+                base64_image = control_guidelines.encode_image(filename)
+                # Do not show the metadata in the Chat
+                # st.session_state["messages"].append({"role": "assistant", "content": metadata})
+                st.session_state["messages"].append(
+                    {
+                        "role": "system",
+                        "content": "Hier sind einige Informationen über die Wohnung"
+                        + metadata,
+                    }
+                )
+                st.session_state["messages"].append(
+                    {
+                        "role": "system",
+                        "content": "Hier sind einige Informationen wie gut die Wohnung für altersgerechtes Wohnen geeignet ist. "
+                        + guideline_input,
+                    }
+                )
+                st.session_state["messages"].append(
+                    {
+                        "role": "system",
+                        "content": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                    }
+                )
+                st.session_state["messages"].append(
+                    {"role": "assistant", "content": guideline_input}
+                )
+
+                # # new
+                # st.write(guideline_input)
+        else:
+            st.markdown("Kein Bild hochgeladen")
+
         for message in st.session_state["messages"]:
             if message["role"] != "system":
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
 
-        # for message in st.session_state["messages"]:
-        #     if message["role"] == "user":
-        #         st.markdown(
-        #             f"<div style='text-align: right;'><strong><em>Du:</em></strong> <em>{message['content']}</em></div>",
-        #             unsafe_allow_html=True,
-        #         )
-        #     elif message["role"] == "assistant":
-        #         st.markdown(f"**Bot:** {message['content']}", unsafe_allow_html=True)
-
-        if st.button("Guidelines verarbeiten"):
-            metadata = generate_metadata.extract_metadata(filename)
-            guideline_input = control_guidelines.control_guidelines(filename, metadata)
-            base64_image = control_guidelines.encode_image(filename)
-            # Do not show the metadata in the Chat
-            # st.session_state["messages"].append({"role": "assistant", "content": metadata})
-            st.session_state["messages"].append(
-                {
-                    "role": "system",
-                    "content": "Hier sind einige Informationen über die Wohnung"
-                    + metadata,
-                }
-            )
-            st.session_state["messages"].append(
-                {
-                    "role": "system",
-                    "content": "Hier sind einige Informationen wie gut die Wohnung für altersgerechtes Wohnen geeignet ist. "
-                    + guideline_input,
-                }
-            )
-            st.session_state["messages"].append(
-                {
-                    "role": "system",
-                    "content": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
-                }
-            )
-            st.session_state["messages"].append(
-                {"role": "assistant", "content": guideline_input}
-            )
-
-            # new
-            st.write(guideline_input)
-
         if prompt := st.chat_input("Stellen Sie eine Frage:"):
             st.session_state["messages"].append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
+            # with st.chat_message("user"):
+            #     st.markdown(prompt)
 
             with st.chat_message("assistant"):
                 stream = client.chat.completions.create(
@@ -317,15 +356,17 @@ Viel Erfolg mit RePlanIt! 😊"""
                         {"role": m["role"], "content": m["content"]}
                         for m in st.session_state["messages"]
                     ],
-                    stream=True,
+                    # stream=True,
                     max_tokens=4096,
                     n=1,
                     temperature=0.05,
                 )
-                response = st.write_stream(stream)
+                # response = st.write_stream(stream)
             st.session_state["messages"].append(
-                {"role": "assistant", "content": response}
+                {"role": "assistant", "content": stream.choices[0].message.content}
+                # {"role": "assistant", "content": response}
             )
+            st.rerun()
 
         # def handle_input():
         #     user_input = st.session_state["user_input"]
@@ -350,10 +391,10 @@ Viel Erfolg mit RePlanIt! 😊"""
 
     with tab4:
         st.title("Chatbot")
-        user_input = st.text_input(
+
+        if user_input := st.text_input(
             "Stelle eine Frage zu Normen, Fördermöglichkeiten oder Kosten beim barrierefreien Bauen:"
-        )
-        if user_input:
+        ):
             response = rag.main(user_input)
             st.write(response)
 

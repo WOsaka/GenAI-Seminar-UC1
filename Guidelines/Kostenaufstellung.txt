@@ -1,97 +1,107 @@
-Mögliche barrierefreie Umbaumaßnahmen und Durchschnittspreise: 
+Mögliche barrierefreie Umbaumaßnahmen und dazugehörigen Preise
+Zugang des Gebäudes verbessern:
+    Rampen statt Treppen: Installation von Rampen anstelle von Treppen, um den
+    Zugang zum Gebäude zu ermöglichen: 3.000 €/Einheit.
 
- 
+    Eingangstüren: Verbreiterung der Eingangstüren auf mindestens 90 cm und
+    gegebenenfalls Einbau automatischer Türsysteme: 2.500 €/Tür (inkl. Verbreiterung
+    und Automatikantrieb).
 
-    Zugänglichkeit des Gebäudes verbessern 
+    Barrierefreie Zugänge: Entfernen von Schwellen und Stufen im Eingangsbereich oder
+    Installation von mobilen Rampen
 
-        Installation von Rampen anstelle von Treppen, um den Zugang zum Gebäude zu ermöglichen: 3.000 €/Einheit. 
+    Handläufe und Haltegriffe: Anbringen von Handläufen an Treppen oder Eingängen
+    für zusätzliche Unterstützung: 100 €/lfm
 
-        Verbreiterung der Eingangstüren auf mindestens 90 cm und gegebenenfalls Einbau automatischer Türsysteme: 2.500 €/Tür (inkl. Verbreiterung und Automatikantrieb). 
+Innenräume / Grundriss anpassen
+    1. Tür- und Durchgangsbreiten
+        Verbreiterung der Türen: Türen sollten eine lichte Breite von mindestens 90 cm
+        aufweisen: 400 €/Tür.
 
-        Entfernen von Schwellen und Stufen im Eingangsbereich oder Installation von mobilen Rampen 
+        Schwellenfreiheit: Entfernen von Türschwellen oder Anbringen von
+        Schwellenrampen: 200 €/Schwelle.
 
-        Anbringen von Handläufen an Treppen oder Eingängen für zusätzliche Unterstützung: 100 €/lfm 
+    2. Bodenbeläge
+        Rutschfeste Bodenbeläge: Installation von ebenen, rutschfesten und leicht
+        begehbaren Bodenbelägen, die auch für Rollstühle geeignet sind: 25 €/m².
 
- 
+        Schwellenlose Übergänge: Sicherstellen, dass zwischen Räumen keine
+        Höhenunterschiede bestehen.
 
-    Innenräume anpassen 
+    3. Raumaufteilung
+        Abbrucharbeiten:
+            o Trockenbauwand: 4 - 20 €/m2
+            o Nichttragende gemauerte Wand: 100 - 250 €/m2
+            o Tragende Wand: 400 – 700 €/m2
+            
+        Freie Bewegungsflächen: Anpassung der Möbelanordnung oder Entfernung von
+        Hindernissen, um einen Wendekreis von mindestens 1,50 m für Rollstuhlfahrer zu
+        ermöglichen: 1.500 €/Raum.
 
-Tür- und Durchgangsbreiten 
+        Barrierefreie Küchen und Arbeitsflächen: Installation von unterfahrbaren
+        Arbeitsflächen, höhenverstellbaren Schränken und Elektrogeräten: 10.000
+        €/Küche.
 
-    Türen sollten eine lichte Breite von mindestens 90 cm aufweisen: 1.000 €/Tür. 
+Sanitärbereiche umbauen
+    Barrierefreie Toiletten: Installation von erhöhten Toiletten mit Haltegriffen und
+    Bewegungsflächen: 600 €/Toilette.
 
-    Entfernen von Türschwellen oder Anbringen von Schwellenrampen: 200 €/Schwelle. 
+    Unterfahrbare Waschbecken: Einbau von Waschbecken, die auch im Sitzen
+    genutzt werden können: 400 €/Waschbecken.
+    
+    Ebenerdige Duschen: Ersetzen von Duschwannen durch bodengleiche Duschen
+    mit rutschfestem Belag: 3.500 €/Dusche.
 
-Bodenbeläge 
+    Haltegriffe und Stützsysteme: Installation von Haltegriffen in Duschen und neben
+    der Toilette: 100 €/Griff.
 
-    Installation von ebenen, rutschfesten und leicht begehbaren Bodenbelägen, die auch für Rollstühle geeignet sind: 60 €/m². 
+    Thermostatgesteuerte Armaturen: Einbau von Armaturen mit einstellbarer
+    Temperaturbegrenzung zur Vermeidung von Verbrühungen: 300 €/Armatur.
 
-    Sicherstellen, dass zwischen Räumen keine Höhenunterschiede bestehen. 
+Treppen und Aufzüge
+    Treppenlifte: Installation von Treppenliften oder Plattformliften bei
+    mehrstöckigen Gebäuden: 8.000 €/Treppenlift oder 15.000 €/Plattformlift.
 
-Raumaufteilung 
+    Aufzüge: Nachrüstung von Personenaufzügen, insbesondere in
+    Mehrfamilienhäusern, mit ausreichend Platz für Rollstuhlfahrer (mindestens 1,10
+    m x 1,40 m Kabinengröße): 35.000 €/Aufzug.
 
-     Anpassung der Möbelanordnung oder Entfernung von Hindernissen, um einen Wendekreis von mindestens 1,50 m für Rollstuhlfahrer zu ermöglichen: 1.500 €/Raum. 
+    Handläufe: Doppelte Handläufe an beiden Seiten der Treppen: 100 €/lfm.
 
-    Installation von unterfahrbaren Arbeitsflächen, höhenverstellbaren Schränken und Elektrogeräten. 
+Beleuchtung und Orientierung
+    Verbesserung der Beleuchtung: Installation von hellen, blendfreien und
+    gleichmäßigen Lichtquellen: 300 €/Raum.
 
- 
+    Kontraste und Markierungen: Anbringen kontrastreicher Markierungen an
+    Stufen, Türen und Bedienelementen: 30 €/lfm.
 
-    Sanitärbereiche umbauen 
+    Taktile Orientierung: Ergänzung von tastbaren Elementen wie Braille-Schrift oder
+    Bodenleitsystemen für sehbehinderte Menschen: 100 €/m.
 
-        Installation von erhöhten Toiletten mit Haltegriffen und Bewegungsflächen: 600 €/Toilette. 
+Elektrik und Bedienelemente
+    Erreichbarkeit verbessern: Umpositionierung von Lichtschaltern, Steckdosen und
+    anderen Bedienelementen in einer Höhe von 85–120 cm: 100 €/m.
 
-        Einbau von Waschbecken, die auch im Sitzen genutzt werden können: 400 €/Waschbecken. 
+    Automatisierung: Installation von Smart-Home-Technologien, wie
+    Sprachsteuerung, sensorgesteuerte Beleuchtung oder elektrische
+    Vorhänge: 6.000 €/System.
 
-        Ersetzen von Duschwannen durch bodengleiche Duschen mit rutschfestem Belag: 3.500 €/Dusche. 
+    Notrufsysteme: Einbau von Notrufsystemen, insbesondere in Badezimmern und
+    Schlafzimmern: 300 €/Einheit.
 
-        Installation von Haltegriffen in Duschen und neben der Toilette: 100 €/Griff. 
+Außenbereich und Parkmöglichkeiten
+    Barrierefreie Wege: Anpassung der Gehwege durch ebenmäßige und rutschfeste
+    Beläge: 125 €/m².
 
-        Einbau von Armaturen mit einstellbarer Temperaturbegrenzung zur Vermeidung von Verbrühungen: 300 €/Armatur. 
+    Behindertenparkplätze: Schaffung von ausreichend großen Parkplätzen nahe
+    dem Eingang: 1.250 €/Platz.
 
- 
+    Zugänglichkeit von Gärten und Terrassen: Installation von schwellenlosen
+    Übergängen zu Terrassen oder Balkonen: 2.000 €/Übergang.
 
-    Treppen und Aufzüge 
+Sicherheitsmaßnahmen
+    Rauch- und Kohlenmonoxidmelder: Installation von barrierefreien
+    Alarmsystemen mit visuellen und akustischen Signalen: 60 €/Gerät.
 
-        Installation von Treppenliften oder Plattformliften bei mehrstöckigen Gebäuden: 8.000 €/Treppenlift oder 15.000 €/Plattformlift. 
-
-        Nachrüstung von Personenaufzügen, insbesondere in Mehrfamilienhäusern, mit ausreichend Platz für Rollstuhlfahrer (mindestens 1,10 m x 1,40 m Kabinengröße): 35.000 €/Aufzug. 
-
-        Doppelte Handläufe an beiden Seiten der Treppen: 100 €/lfm. 
-
-     
-
-    Beleuchtung und Orientierung 
-
-        Installation von hellen, blendfreien und gleichmäßigen Lichtquellen: 300 €/Raum. 
-
-        Anbringen kontrastreicher Markierungen an Stufen, Türen und Bedienelementen: 30 €/lfm. 
-
-        Ergänzung von tastbaren Elementen wie Braille-Schrift oder Bodenleitsystemen für sehbehinderte Menschen: 100 €/m. 
-
- 
-
-    Elektrik und Bedienelemente 
-
-        Umpositionierung von Lichtschaltern, Steckdosen und anderen Bedienelementen in einer Höhe von 85–120 cm: 100 €/m. 
-
-        Installation von Smart-Home-Technologien, wie Sprachsteuerung, sensorgesteuerte Beleuchtung oder elektrische Vorhänge: 6.000 €/System. 
-
-        Einbau von Notrufsystemen, insbesondere in Badezimmern und Schlafzimmern: 300 €/Einheit. 
-
- 
-
-    Außenbereich und Parkmöglichkeiten 
-
-        Anpassung der Gehwege durch ebenmäßige und rutschfeste Beläge: 125 €/m². 
-
-        Schaffung von ausreichend großen Parkplätzen nahe dem Eingang: 1.250 €/Platz. 
-
-        Installation von schwellenlosen Übergängen zu Terrassen oder Balkonen: 2.000 €/Übergang. 
-
- 
-
-    Sicherheitsmaßnahmen 
-
-        Installation von barrierefreien Alarmsystemen mit visuellen und akustischen Signalen: 60 €/Gerät. 
-
-        Zusätzliche Sicherheitsmaßnahmen in gefährdeten Bereichen, wie Badezimmern und Treppenhäusern: 100 €/Einheit.
+    Haltegriffe und Antirutschmatten: Zusätzliche Sicherheitsmaßnahmen in
+    gefährdeten Bereichen, wie Badezimmern und Treppenhäusern: 100 €/Einheit.

@@ -90,7 +90,7 @@ def draw_polygons_around_words(
                     )
 
     # Save the image with polygons
-    cv.imwrite(r"pipeline\1_text_highlighted.png", image)
+    cv.imwrite(r"pipeline/1_text_highlighted.png", image)
     cv.imwrite(output_path, image)
 
 
@@ -137,7 +137,7 @@ def remove_text_from_image(
     inpainted_image = cv.inpaint(image, mask, inpaintRadius=7, flags=cv.INPAINT_TELEA)
 
     # Save the inpainted image
-    cv.imwrite(r"pipeline\2_text_removed.png", inpainted_image)
+    cv.imwrite(r"pipeline/2_text_removed.png", inpainted_image)
     cv.imwrite(output_path, inpainted_image)
 
 
@@ -189,17 +189,17 @@ def find_contours(image_path):
 
     # Convert to binary
     _, binary = cv.threshold(img, 90, 255, cv.THRESH_BINARY_INV)
-    cv.imwrite(r"pipeline\3_image_binary.png", binary)
+    cv.imwrite(r"pipeline/3_image_binary.png", binary)
 
     # Apply Canny edge detection
     edges = cv.Canny(binary, 100, 200, L2gradient=True)
-    cv.imwrite(r"pipeline\4_image_canny.png", edges)
+    cv.imwrite(r"pipeline/4_image_canny.png", edges)
 
     # Find contours
     contours, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
 
     cv.drawContours(img, contours, -1, (0, 255, 0), 2)
-    cv.imwrite(r"pipeline\5_image_contours.png", img)
+    cv.imwrite(r"pipeline/5_image_contours.png", img)
 
     return (contours, image_height)
 
@@ -236,7 +236,7 @@ def dxf_to_png(dxf_path, png_path):
 
     # Save the figure as a PNG file
     fig.savefig(png_path)
-    fig.savefig(r"pipeline\6_image_dxf.png")
+    fig.savefig(r"pipeline/6_image_dxf.png")
     plt.close(fig)
 
 
@@ -271,17 +271,17 @@ def save_json(data, path_to):
 
 def delete_replace_door_window(image_path, confidence):
     # Roboflow
-    convert_to_jpg(image_path, r"data\segment_floorplan.jpg")
-    prediction = call_roboflow(r"data\segment_floorplan.jpg")
+    convert_to_jpg(image_path, r"data/segment_floorplan.jpg")
+    prediction = call_roboflow(r"data/segment_floorplan.jpg")
     data = prediction.json()
-    save_json(data, r"data\segment_floorplan.json")
+    save_json(data, r"data/segment_floorplan.json")
 
     # Load the image
-    image_path = r"data\segment_floorplan.jpg"
+    image_path = r"data/segment_floorplan.jpg"
     image = Image.open(image_path)
 
     # Load the coordinates from the JSON file
-    with open(r"data\segment_floorplan.json", "r") as file:
+    with open(r"data/segment_floorplan.json", "r") as file:
         data = json.load(file)
 
     # Create a drawing context
@@ -446,30 +446,30 @@ def main(image_path):
     confidence_vision = 0
     confidence_roboflow = 0.4
     delete_replace_door_window(image_path, confidence_roboflow)
-    call_vision(r"uploads\output.png", r"uploads\result_vision")
+    call_vision(r"uploads/output.png", r"uploads/result_vision")
     draw_polygons_around_words(
         image_path,
-        r"uploads\result_vision.json",
-        r"pipeline\1_text_highlighted.png",
+        r"uploads/result_vision.json",
+        r"pipeline/1_text_highlighted.png",
         confidence_vision,
     )
     remove_text_from_image(
-        r"uploads\output.png",
-        r"uploads\result_vision.json",
-        r"uploads\output.png",
+        r"uploads/output.png",
+        r"uploads/result_vision.json",
+        r"uploads/output.png",
         confidence_vision,
     )
-    # put_text_on_image(r"pipeline\2_text_removed.png", r"uploads\result_vision.json", r"pipeline/2.1_text_added.png", confidence_threshold)
+    # put_text_on_image(r"pipeline/2_text_removed.png", r"uploads/result_vision.json", r"pipeline/2.1_text_added.png", confidence_threshold)
 
-    contours, image_height = find_contours(r"uploads\output.png")
-    contours_to_dxf(contours, r"uploads\output.dxf", image_height)
-    dxf_to_png(r"uploads\output.dxf", r"uploads\output.png")
+    contours, image_height = find_contours(r"uploads/output.png")
+    contours_to_dxf(contours, r"uploads/output.dxf", image_height)
+    dxf_to_png(r"uploads/output.dxf", r"uploads/output.png")
     print("converter_cvdw")
 
 
 # Example usage
 if __name__ == "__main__":
-    main(r"Neue Grundrisse\D-Str\D-Str_Obergeschoss.png")
-    # main(r"Grundriss Beispiele\Beispiel_David.png")
-    # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\uploads")
-    # clear_folder(r"C:\Users\Oskar\Documents\Seminar\GenAI-Seminar-UC1\data")
+    main(r"Neue Grundrisse/D-Str/D-Str_Obergeschoss.png")
+    # main(r"Grundriss Beispiele/Beispiel_David.png")
+    # clear_folder(r"C:/Users/Oskar/Documents/Seminar/GenAI-Seminar-UC1/uploads")
+    # clear_folder(r"C:/Users/Oskar/Documents/Seminar/GenAI-Seminar-UC1/data")

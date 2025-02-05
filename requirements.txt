@@ -7,3 +7,4 @@ roboflow
 shapely
 azure-ai-vision-imageanalysis
 streamlit
+tk
